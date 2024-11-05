@@ -70,8 +70,6 @@ public class ClientUDP : MonoBehaviour
 
         // Send the message to the server
         udpClient.Send(sendBytes, sendBytes.Length, ipep);
-
-        Debug.Log("Sent to server: " + message);
     }
 
     // Función que permite enviar un mensaje personalizado desde la UI al servidor
@@ -87,6 +85,7 @@ public class ClientUDP : MonoBehaviour
 
         // Actualizar el texto del cliente con el mensaje enviado
         clientText += "\n" + message.text;
+        Debug.Log("Sent to server: " + message);
     }
 
     // Función que recibe los mensajes enviados por el servidor y los muestra en la UI

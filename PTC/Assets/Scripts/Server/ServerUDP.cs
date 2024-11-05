@@ -4,10 +4,15 @@ using System.Text;
 using UnityEngine;
 using System.Threading;
 using TMPro;
+using System;
+using System.Xml.Serialization;
+using System.IO;
 
 public class ServerUDP : MonoBehaviour
 {
-    Socket socket;
+    private UdpClient udpServer;
+    private IPEndPoint remoteEndPoint;
+
 
     public GameObject UItextObj;
     TextMeshProUGUI UItext;
@@ -20,18 +25,15 @@ public class ServerUDP : MonoBehaviour
     }
 
     // Función para iniciar el servidor UDP
-    public void startServer()
+    public void startServer(int port = 9050)
     {
-        serverText = "Starting UDP Server...";  // Establecer texto inicial en el UI
+        udpServer = new UdpClient(port);
+        remoteEndPoint = new IPEndPoint(IPAddress.Any, port);
 
-        // Crear un punto de enlace (IPEndPoint) que escuche en el puerto 9050 de cualquier dirección IP
-        IPEndPoint ipep = new IPEndPoint(IPAddress.Any, 9050);
-        socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);  // Crear un socket UDP
-        socket.Bind(ipep);  // Enlazar el socket al puerto 9050
+        Debug.Log("Server started. Waiting for messages...");
 
-        // Crear un hilo que se encargará de recibir los mensajes de los clientes
-        Thread newConnection = new Thread(Receive);
-        newConnection.Start();  // Iniciar el hilo para recibir mensajes
+        // Start receiving data asynchronously
+        udpServer.BeginReceive(Receive, null);
     }
 
     // Actualización del UI con el texto del servidor
@@ -41,35 +43,41 @@ public class ServerUDP : MonoBehaviour
     }
 
     // Función que maneja la recepción de mensajes desde los clientes
-    void Receive()
+    void Receive(IAsyncResult result)
     {
-        int recv;
-        byte[] data = new byte[1024];  // Buffer para almacenar los datos recibidos
+        byte[] bytes = new byte[1024];
 
-        serverText = serverText + "\n" + "Waiting for new Client...";  // Informar que estamos esperando nuevos clientes
+        XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+        var t = new Packet();
 
-        // Crear un endpoint que pueda recibir mensajes desde cualquier dirección IP
-        IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
-        EndPoint Remote = (EndPoint)(sender);  // Convertir el IPEndPoint en un EndPoint genérico
+        MemoryStream stream = new MemoryStream();
 
-        // Bucle infinito para recibir mensajes de cualquier cliente
-        while (true)
-        {
-            recv = socket.ReceiveFrom(data, ref Remote);  // Recibir datos del cliente y almacenar la dirección remota
-            serverText = serverText + "\n" + string.Format("Message received from {0}:", Remote.ToString());  // Mostrar en el UI la dirección del cliente
-            serverText = serverText + "\n" + Encoding.ASCII.GetString(data, 0, recv);  // Mostrar el contenido del mensaje recibido
+        stream.Write(bytes, 0, bytes.Length);
+        stream.Seek(0, SeekOrigin.Begin);
 
-            // Después de recibir el mensaje, enviamos un ping al cliente
-            Thread sendPing = new Thread(() => Send(Remote));  // Crear un hilo para enviar el ping
-            sendPing.Start();  // Iniciar el hilo de envío
-        }
+        t = (Packet)serializer.Deserialize(stream);
+
+        Debug.Log("Received from client: " + t);
+
+        // Process the received data
+
+        // Continue receiving data asynchronously
+        udpServer.BeginReceive(Receive, null);
     }
 
     // Función que envía un mensaje de "Ping" al cliente
-    void Send(EndPoint Remote)
+    void Send(Packet paquete, IPEndPoint Remote)
     {
-        string welcome = "Ping";  // Mensaje de saludo
-        byte[] data = Encoding.ASCII.GetBytes(welcome);  // Convertir el mensaje a bytes
-        socket.SendTo(data, Remote);  // Enviar el mensaje "Ping" al cliente utilizando su dirección remota
+        var t = new Packet();
+        t.playerPosition = paquete.playerPosition;
+        t.playerRotation = paquete.playerRotation;
+        t.playerCanonRotation = paquete.playerCanonRotation;
+        XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+        MemoryStream stream = new MemoryStream();
+        serializer.Serialize(stream, t);
+        byte[] sendBytes = stream.ToArray();
+
+        // Send the message to the server
+        udpServer.Send(sendBytes, sendBytes.Length, Remote);
     }
 }
