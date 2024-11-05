@@ -4,105 +4,100 @@ using System.Text;
 using UnityEngine;
 using System.Threading;
 using TMPro;
+using System;
+using System.Xml.Serialization;
+using System.IO;
+
+public enum Message
+{ 
+    CLIENT,
+    SERVER
+}
+
+[System.Serializable]
+public struct Packet
+{
+    public Vector3 playerPosition;
+    public Quaternion playerRotation;
+    public Quaternion playerCanonRotation;
+
+    // vida
+    // id player
+}
 
 public class ClientUDP : MonoBehaviour
 {
-    Socket socket;
+    UdpClient udpClient;
+    IPEndPoint ipep;
+
     public GameObject UItextObj;
     TextMeshProUGUI UItext;
     string clientText;
     public TextMeshProUGUI message;
 
-    // Start is called before the first frame update
+    // Función llamada al inicio del juego para inicializar el UI
     void Start()
     {
-        UItext = UItextObj.GetComponent<TextMeshProUGUI>();
-
+        UItext = UItextObj.GetComponent<TextMeshProUGUI>();  // Obtener el componente TextMeshProUGUI del objeto UI
     }
-    public void StartClient()
+
+    public void StartUDPClient(string ipAddress, int port = 9050)
     {
-        Thread mainThread = new Thread(Send);
-        mainThread.Start();
+        udpClient = new UdpClient();
+        ipep = new IPEndPoint(IPAddress.Parse(ipAddress), port);
+
+        // Start receiving data asynchronously
+        udpClient.BeginReceive(Receive, null);
     }
 
+    // Función que actualiza el texto mostrado en la UI
     void Update()
     {
-        UItext.text = clientText;
+        UItext.text = clientText;  // Actualizar el texto en el UI con el mensaje recibido
     }
 
-    void Send()
+    // Función que envía mensajes al servidor
+    void Send(Packet paquete)
     {
-        //TO DO 2
-        //Unlike with TCP, we don't "connect" first,
-        //we are going to send a message to establish our communication so we need an endpoint
-        //We need the server's IP and the port we've binded it to before
-        //Again, initialize the socket
-        IPEndPoint ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9050);
+        var t = new Packet();
+        t.playerPosition = paquete.playerPosition;
+        t.playerRotation = paquete.playerRotation;
+        t.playerCanonRotation = paquete.playerCanonRotation;
+        XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+        MemoryStream stream = new MemoryStream();
+        serializer.Serialize(stream, t);
+        byte[] sendBytes = stream.ToArray();
 
-        socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        // Send the message to the server
+        udpClient.Send(sendBytes, sendBytes.Length, ipep);
 
-        //TO DO 2.1 
-        //Send the Handshake to the server's endpoint.
-        //This time, our UDP socket doesn't have it, so we have to pass it
-        //as a parameter on it's SendTo() method
-
-        
-        string handshake = "Hello World";
-        byte[] data = Encoding.ASCII.GetBytes(handshake);
-        socket.SendTo(data, ipep);
-  
-        //TO DO 5
-        //We'll wait for a server response,
-        //so you can already start the receive thread
-        Thread receive = new Thread(Receive);
-        receive.Start();
-
+        Debug.Log("Sent to server: " + message);
     }
 
+    // Función que permite enviar un mensaje personalizado desde la UI al servidor
     public void SendMessage()
     {
-        //TO DO 2
-        //Unlike with TCP, we don't "connect" first,
-        //we are going to send a message to establish our communication so we need an endpoint
-        //We need the server's IP and the port we've binded it to before
-        //Again, initialize the socket
-        IPEndPoint ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9050);
-
-        socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-
-        //TO DO 2.1 
-        //Send the Handshake to the server's endpoint.
-        //This time, our UDP socket doesn't have it, so we have to pass it
-        //as a parameter on it's SendTo() method
-
-
+        // Obtener el mensaje desde el campo de texto de la UI
         string handshake = message.text;
-        byte[] data = Encoding.ASCII.GetBytes(handshake);
-        socket.SendTo(data, ipep);
+
+        byte[] sendBytes = System.Text.Encoding.UTF8.GetBytes(handshake);
+
+        // Send the message to the server
+        udpClient.Send(sendBytes, sendBytes.Length, ipep);
+
+        // Actualizar el texto del cliente con el mensaje enviado
         clientText += "\n" + message.text;
-
-        //TO DO 5
-        //We'll wait for a server response,
-        //so you can already start the receive thread
-        Thread receive = new Thread(Receive);
-        receive.Start();
-
     }
 
-    //TO DO 5
-    //Same as in the server, in this case the remote is a bit useless
-    //since we already know it's the server who's communicating with us
-    void Receive()
+    // Función que recibe los mensajes enviados por el servidor y los muestra en la UI
+    private void Receive(IAsyncResult result)
     {
-        IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
-        EndPoint Remote = (EndPoint)(sender);
-        byte[] data = new byte[1024];
-        int recv = socket.ReceiveFrom(data, ref Remote);
+        byte[] receivedBytes = udpClient.EndReceive(result, ref ipep);
+        string receivedMessage = System.Text.Encoding.UTF8.GetString(receivedBytes);
 
-        clientText += ("\nMessage received from {0}: " + Remote.ToString());
-        clientText = clientText += "\n" + Encoding.ASCII.GetString(data, 0, recv);
+        Debug.Log("Received from server: " + receivedMessage);
 
+        // Continue receiving data asynchronously
+        udpClient.BeginReceive(Receive, null);
     }
-
 }
-

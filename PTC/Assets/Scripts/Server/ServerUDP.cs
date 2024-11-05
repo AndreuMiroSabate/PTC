@@ -13,81 +13,63 @@ public class ServerUDP : MonoBehaviour
     TextMeshProUGUI UItext;
     string serverText;
 
+    // Función llamada al inicio del juego para inicializar el UI
     void Start()
     {
-        UItext = UItextObj.GetComponent<TextMeshProUGUI>();
-
+        UItext = UItextObj.GetComponent<TextMeshProUGUI>();  // Obtener el componente TextMeshProUGUI del objeto UI
     }
+
+    // Función para iniciar el servidor UDP
     public void startServer()
     {
-        serverText = "Starting UDP Server...";
+        serverText = "Starting UDP Server...";  // Establecer texto inicial en el UI
 
-        //TO DO 1
-        //UDP doesn't keep track of our connections like TCP
-        //This means that we "can only" reply to other endpoints,
-        //since we don't know where or who they are
-        //We want any UDP connection that wants to communicate with 9050 port to send it to our socket.
-        //So as with TCP, we create a socket and bind it to the 9050 port. 
-
+        // Crear un punto de enlace (IPEndPoint) que escuche en el puerto 9050 de cualquier dirección IP
         IPEndPoint ipep = new IPEndPoint(IPAddress.Any, 9050);
-        socket = new Socket(AddressFamily.InterNetwork,SocketType.Dgram,ProtocolType.Udp);
-        socket.Bind(ipep);
+        socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);  // Crear un socket UDP
+        socket.Bind(ipep);  // Enlazar el socket al puerto 9050
 
-        //TO DO 3
-        //Our client is sending a handshake, the server has to be able to recieve it
-        //It's time to call the Receive thread
+        // Crear un hilo que se encargará de recibir los mensajes de los clientes
         Thread newConnection = new Thread(Receive);
-        newConnection.Start();
+        newConnection.Start();  // Iniciar el hilo para recibir mensajes
     }
 
+    // Actualización del UI con el texto del servidor
     void Update()
     {
-        UItext.text = serverText;
-
+        UItext.text = serverText;  // Actualizar el texto mostrado en el UI
     }
 
- 
+    // Función que maneja la recepción de mensajes desde los clientes
     void Receive()
     {
         int recv;
-        byte[] data = new byte[1024];
-        
-        serverText = serverText + "\n" + "Waiting for new Client...";
+        byte[] data = new byte[1024];  // Buffer para almacenar los datos recibidos
 
-        //TO DO 3
-        //We don't know who may be comunicating with this server, so we have to create an
-        //endpoint with any address and an IpEndpoint from it to reply to it later.
+        serverText = serverText + "\n" + "Waiting for new Client...";  // Informar que estamos esperando nuevos clientes
+
+        // Crear un endpoint que pueda recibir mensajes desde cualquier dirección IP
         IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
-        EndPoint Remote = (EndPoint)(sender);
+        EndPoint Remote = (EndPoint)(sender);  // Convertir el IPEndPoint en un EndPoint genérico
 
-        //Loop the whole process, and start receiveing messages directed to our socket
-        //(the one we binded to a port before)
-        //When using socket.ReceiveFrom, be sure send our remote as a reference so we can keep
-        //this adress (the client) and reply to it on TO DO 4
-        
+        // Bucle infinito para recibir mensajes de cualquier cliente
         while (true)
         {
-            recv = socket.ReceiveFrom(data, ref Remote);
-            serverText = serverText + "\n" + "Message received from {0}:" + Remote.ToString();
-            serverText = serverText + "\n" + Encoding.ASCII.GetString(data, 0, recv);
+            recv = socket.ReceiveFrom(data, ref Remote);  // Recibir datos del cliente y almacenar la dirección remota
+            serverText = serverText + "\n" + string.Format("Message received from {0}:", Remote.ToString());  // Mostrar en el UI la dirección del cliente
+            serverText = serverText + "\n" + Encoding.ASCII.GetString(data, 0, recv);  // Mostrar el contenido del mensaje recibido
 
-            //TO DO 4
-            //When our UDP server receives a message from a random remote, it has to send a ping,
-            //Call a send thread
-            Thread sendPing = new Thread(() => Send(Remote));
-            sendPing.Start();
+            // Después de recibir el mensaje, enviamos un ping al cliente
+            Thread sendPing = new Thread(() => Send(Remote));  // Crear un hilo para enviar el ping
+            sendPing.Start();  // Iniciar el hilo de envío
         }
-
     }
 
+    // Función que envía un mensaje de "Ping" al cliente
     void Send(EndPoint Remote)
     {
-        //TO DO 4
-        //Use socket.SendTo to send a ping using the remote we stored earlier.
-        string welcome = "Ping";
-        byte[] data = Encoding.ASCII.GetBytes(welcome);
-        socket.SendTo(data, Remote);
+        string welcome = "Ping";  // Mensaje de saludo
+        byte[] data = Encoding.ASCII.GetBytes(welcome);  // Convertir el mensaje a bytes
+        socket.SendTo(data, Remote);  // Enviar el mensaje "Ping" al cliente utilizando su dirección remota
     }
-
-   
 }
