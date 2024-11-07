@@ -1695,6 +1695,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 900485736}
   m_CullTransparentMesh: 1
+--- !u!1 &1047912870
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1047912872}
+  - component: {fileID: 1047912871}
+  m_Layer: 0
+  m_Name: UDP_Client
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1047912871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1047912870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ded76a535ab860498072928ea7a5925, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UItextObj: {fileID: 0}
+  message: {fileID: 0}
+--- !u!4 &1047912872
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1047912870}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -5.5444355, y: 16.064106, z: -10.356739}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1106579508
 GameObject:
   m_ObjectHideFlags: 0
@@ -2234,7 +2280,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 2.399994, y: -9.4}
+  m_AnchoredPosition: {x: 2.4000244, y: -9.399994}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1375652477
@@ -2591,7 +2637,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1596411429}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1047912871}
+        m_TargetAssemblyTypeName: ClientUDP, Assembly-CSharp
+        m_MethodName: StartUDPClient
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1812636392}
+          m_ObjectArgumentAssemblyTypeName: TMPro.TextMeshProUGUI, Unity.TextMeshPro
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1596411429
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2669,7 +2727,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 2.399994, y: -9.4}
+  m_AnchoredPosition: {x: 2.4000244, y: -9.399994}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1739393730
@@ -2829,6 +2887,18 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: TestScene
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1903036503}
+        m_TargetAssemblyTypeName: ServerUDP, Assembly-CSharp
+        m_MethodName: startServer
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 9050
+          m_FloatArgument: 0
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1744537114
@@ -3479,28 +3549,13 @@ GameObject:
   m_Component:
   - component: {fileID: 1903036504}
   - component: {fileID: 1903036503}
-  - component: {fileID: 1903036502}
   m_Layer: 0
-  m_Name: UDPController
+  m_Name: UDP_Server
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1903036502
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1903036501}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ded76a535ab860498072928ea7a5925, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UItextObj: {fileID: 0}
-  message: {fileID: 0}
 --- !u!114 &1903036503
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4114,3 +4169,4 @@ SceneRoots:
   - {fileID: 142616644}
   - {fileID: 45633762}
   - {fileID: 1903036504}
+  - {fileID: 1047912872}

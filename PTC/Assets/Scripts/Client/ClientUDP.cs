@@ -22,7 +22,7 @@ public struct Packet
     public Quaternion playerCanonRotation;
 
     // vida
-    float life;
+    public float life;
     // id player
     public string playerID;
 }
@@ -34,19 +34,29 @@ public class ClientUDP : MonoBehaviour
 
     public GameObject UItextObj;
     TextMeshProUGUI UItext;
-    string clientText;
+    string clientText = "";
     public TextMeshProUGUI message;
 
     // Función llamada al inicio del juego para inicializar el UI
     void Start()
     {
-        UItext = UItextObj.GetComponent<TextMeshProUGUI>();  // Obtener el componente TextMeshProUGUI del objeto UI
+        //UItext = UItextObj.GetComponent<TextMeshProUGUI>();  // Obtener el componente TextMeshProUGUI del objeto UI
+        DontDestroyOnLoad(gameObject);
     }
 
-    public void StartUDPClient(string ipAddress, int port = 9050)
+    public void StartUDPClient(TextMeshProUGUI ipAddress)
     {
         udpClient = new UdpClient();
-        ipep = new IPEndPoint(IPAddress.Parse(ipAddress), port);
+        ipep = new IPEndPoint(IPAddress.Parse(ipAddress.text), 9050);
+
+        // Start receiving data asynchronously
+        udpClient.BeginReceive(Receive, null);
+    }
+
+    public void StartUDPClient(IPAddress ipAddress)
+    {
+        udpClient = new UdpClient();
+        ipep = new IPEndPoint(ipAddress, 9050);
 
         // Start receiving data asynchronously
         udpClient.BeginReceive(Receive, null);
@@ -55,7 +65,7 @@ public class ClientUDP : MonoBehaviour
     // Función que actualiza el texto mostrado en la UI
     void Update()
     {
-        UItext.text = clientText;  // Actualizar el texto en el UI con el mensaje recibido
+        //UItext.text = clientText;  // Actualizar el texto en el UI con el mensaje recibido
     }
 
     // Función que envía mensajes al servidor

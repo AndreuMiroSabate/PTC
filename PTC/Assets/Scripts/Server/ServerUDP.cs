@@ -13,6 +13,7 @@ public class ServerUDP : MonoBehaviour
     private UdpClient udpServer;
     private IPEndPoint remoteEndPoint;
 
+    public ClientUDP clientUDP;
 
     public GameObject UItextObj;
     TextMeshProUGUI UItext;
@@ -21,7 +22,7 @@ public class ServerUDP : MonoBehaviour
     // Función llamada al inicio del juego para inicializar el UI
     void Start()
     {
-        UItext = UItextObj.GetComponent<TextMeshProUGUI>();  // Obtener el componente TextMeshProUGUI del objeto UI
+        //UItext = UItextObj.GetComponent<TextMeshProUGUI>();  // Obtener el componente TextMeshProUGUI del objeto UI
     }
 
     // Función para iniciar el servidor UDP
@@ -32,6 +33,10 @@ public class ServerUDP : MonoBehaviour
 
         Debug.Log("Server started. Waiting for messages...");
 
+        clientUDP.StartUDPClient(remoteEndPoint.Address);
+
+        DontDestroyOnLoad(gameObject);
+
         // Start receiving data asynchronously
         udpServer.BeginReceive(Receive, null);
     }
@@ -39,7 +44,7 @@ public class ServerUDP : MonoBehaviour
     // Actualización del UI con el texto del servidor
     void Update()
     {
-        UItext.text = serverText;  // Actualizar el texto mostrado en el UI
+        //UItext.text = serverText;  // Actualizar el texto mostrado en el UI
     }
 
     // Función que maneja la recepción de mensajes desde los clientes
