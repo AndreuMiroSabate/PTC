@@ -91,10 +91,29 @@ public class ClientUDP : MonoBehaviour
     // Función que recibe los mensajes enviados por el servidor y los muestra en la UI
     private void Receive(IAsyncResult result)
     {
-        byte[] receivedBytes = udpClient.EndReceive(result, ref ipep);
+        /*byte[] receivedBytes = udpClient.EndReceive(result, ref ipep);
         string receivedMessage = System.Text.Encoding.UTF8.GetString(receivedBytes);
 
         Debug.Log("Received from server: " + receivedMessage);
+
+        // Continue receiving data asynchronously
+        udpClient.BeginReceive(Receive, null);*/
+
+        byte[] bytes = new byte[1024];
+
+        XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+        var t = new Packet();
+
+        MemoryStream stream = new MemoryStream();
+
+        stream.Write(bytes, 0, bytes.Length);
+        stream.Seek(0, SeekOrigin.Begin);
+
+        t = (Packet)serializer.Deserialize(stream);
+
+        Debug.Log("Received from server: " + t);
+
+        // Process the received data
 
         // Continue receiving data asynchronously
         udpClient.BeginReceive(Receive, null);
