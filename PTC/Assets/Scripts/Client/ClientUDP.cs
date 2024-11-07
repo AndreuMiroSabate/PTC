@@ -41,7 +41,6 @@ public class ClientUDP : MonoBehaviour
     void Start()
     {
         //UItext = UItextObj.GetComponent<TextMeshProUGUI>();  // Obtener el componente TextMeshProUGUI del objeto UI
-        DontDestroyOnLoad(gameObject);
     }
 
     public void StartUDPClient(TextMeshProUGUI ipAddress)
@@ -49,6 +48,9 @@ public class ClientUDP : MonoBehaviour
         Debug.Log(ipAddress.text);
         udpClient = new UdpClient();
         ipep = new IPEndPoint(IPAddress.Parse(ipAddress.text.Trim()), 9050);
+
+        //No se destruya 
+        DontDestroyOnLoad(gameObject);
 
         // Start receiving data asynchronously
         udpClient.BeginReceive(Receive, null);
