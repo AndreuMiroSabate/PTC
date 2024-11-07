@@ -46,21 +46,14 @@ public class ClientUDP : MonoBehaviour
 
     public void StartUDPClient(TextMeshProUGUI ipAddress)
     {
+        Debug.Log(ipAddress.text);
         udpClient = new UdpClient();
-        ipep = new IPEndPoint(IPAddress.Parse(ipAddress.text), 9050);
+        ipep = new IPEndPoint(IPAddress.Parse(ipAddress.text.Trim()), 9050);
 
         // Start receiving data asynchronously
         udpClient.BeginReceive(Receive, null);
     }
 
-    public void StartUDPClient(IPAddress ipAddress)
-    {
-        udpClient = new UdpClient();
-        ipep = new IPEndPoint(ipAddress, 9050);
-
-        // Start receiving data asynchronously
-        udpClient.BeginReceive(Receive, null);
-    }
 
     // Función que actualiza el texto mostrado en la UI
     void Update()
