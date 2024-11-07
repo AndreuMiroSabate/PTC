@@ -13,8 +13,6 @@ public class ServerUDP : MonoBehaviour
     private UdpClient udpServer;
     private IPEndPoint remoteEndPoint;
 
-    public ClientUDP clientUDP;
-
     public GameObject UItextObj;
     TextMeshProUGUI UItext;
     string serverText;
@@ -32,9 +30,7 @@ public class ServerUDP : MonoBehaviour
         remoteEndPoint = new IPEndPoint(IPAddress.Any, port);
 
         Debug.Log("Server started. Waiting for messages...");
-
-        clientUDP.StartUDPClient(remoteEndPoint.Address);
-
+ 
         DontDestroyOnLoad(gameObject);
 
         // Start receiving data asynchronously

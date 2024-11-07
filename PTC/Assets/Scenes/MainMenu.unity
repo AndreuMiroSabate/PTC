@@ -2280,7 +2280,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 2.4000244, y: -9.399994}
+  m_AnchoredPosition: {x: 2.4000244, y: -9.400024}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1375652477
@@ -2727,7 +2727,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 2.4000244, y: -9.399994}
+  m_AnchoredPosition: {x: 2.4000244, y: -9.400024}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1739393730
@@ -3568,6 +3568,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7e8e958e30322c4c80b9006753ae2f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  clientUDP: {fileID: 1047912871}
   UItextObj: {fileID: 0}
 --- !u!4 &1903036504
 Transform:
