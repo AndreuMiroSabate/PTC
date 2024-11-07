@@ -22,7 +22,9 @@ public struct Packet
     public Quaternion playerCanonRotation;
 
     // vida
+    float life;
     // id player
+    public string playerID;
 }
 
 public class ClientUDP : MonoBehaviour
@@ -63,6 +65,7 @@ public class ClientUDP : MonoBehaviour
         t.playerPosition = paquete.playerPosition;
         t.playerRotation = paquete.playerRotation;
         t.playerCanonRotation = paquete.playerCanonRotation;
+        t.playerID = paquete.playerID;
         XmlSerializer serializer = new XmlSerializer(typeof(Packet));
         MemoryStream stream = new MemoryStream();
         serializer.Serialize(stream, t);
@@ -91,14 +94,6 @@ public class ClientUDP : MonoBehaviour
     // Función que recibe los mensajes enviados por el servidor y los muestra en la UI
     private void Receive(IAsyncResult result)
     {
-        /*byte[] receivedBytes = udpClient.EndReceive(result, ref ipep);
-        string receivedMessage = System.Text.Encoding.UTF8.GetString(receivedBytes);
-
-        Debug.Log("Received from server: " + receivedMessage);
-
-        // Continue receiving data asynchronously
-        udpClient.BeginReceive(Receive, null);*/
-
         byte[] bytes = new byte[1024];
 
         XmlSerializer serializer = new XmlSerializer(typeof(Packet));
