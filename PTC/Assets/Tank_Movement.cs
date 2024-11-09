@@ -8,12 +8,25 @@ public class Tank_Movement : MonoBehaviour
     public Transform car;
     public float speed = 17;
 
+    public delegate void UpdatePackages(Packet package);
+
+    public UpdatePackages playerUpdate;
+
+    Packet playerPacket;
+
 
     Vector3 rotationRight = new Vector3(0, 60, 0);
     Vector3 rotationLeft = new Vector3(0, -60, 0);
 
     Vector3 forward = new Vector3(1, 0, 0);
     Vector3 backward = new Vector3(-1, 0, 0);
+
+    private void Start()
+    {
+        playerPacket = new Packet();
+        playerPacket.playerPosition = transform.position;
+        playerPacket.playerRotation = transform.rotation;
+    }
 
     void FixedUpdate()
     {
@@ -39,4 +52,11 @@ public class Tank_Movement : MonoBehaviour
         }
 
     }
+
+    private void Update()
+    {
+        playerUpdate?.Invoke(playerPacket);
+    }
+
+
 }

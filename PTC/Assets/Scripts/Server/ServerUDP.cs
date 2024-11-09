@@ -7,6 +7,7 @@ using TMPro;
 using System;
 using System.Xml.Serialization;
 using System.IO;
+using System.Collections.Generic;
 
 public class ServerUDP : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class ServerUDP : MonoBehaviour
     public GameObject UItextObj;
     TextMeshProUGUI UItext;
     string serverText;
+
+    List<Packet> clients;
 
     // Función llamada al inicio del juego para inicializar el UI
     void Start()
@@ -63,11 +66,9 @@ public class ServerUDP : MonoBehaviour
 
         // Process the received data
 
-
-
-
         // Continue receiving data asynchronously
         udpServer.BeginReceive(Receive, null);
+        Send(t,remoteEndPoint);
     }
 
     // Función que envía un mensaje de "Ping" al cliente

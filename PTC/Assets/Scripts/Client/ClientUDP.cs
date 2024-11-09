@@ -38,6 +38,7 @@ public class ClientUDP : MonoBehaviour
     TextMeshProUGUI UItext;
     string clientText = "";
     public TextMeshProUGUI message;
+    public string playerID;
 
     public TextMeshProUGUI serverIP1;
     [Space]
@@ -59,10 +60,16 @@ public class ClientUDP : MonoBehaviour
         udpClient = new UdpClient();
         ipep = new IPEndPoint(IPAddress.Parse("192.168.1.101"), 9050);
 
+        playerID = Guid.NewGuid().ToString();
+
+        Packet packet = new Packet();
+        packet.playerID = playerID;
+
         //No se destruya 
         DontDestroyOnLoad(gameObject);
         // Start receiving data asynchronously
         udpClient.BeginReceive(Receive, null);
+        Send(packet);
     }
 
 
