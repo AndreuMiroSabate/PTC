@@ -25,6 +25,8 @@ public struct Packet
     public float life;
     // id player
     public string playerID;
+    //nombre del player
+    public string playerName;
 }
 
 public class ClientUDP : MonoBehaviour
@@ -37,20 +39,22 @@ public class ClientUDP : MonoBehaviour
     string clientText = "";
     public TextMeshProUGUI message;
 
+    public TextMeshProUGUI serverIP;
+
     // Función llamada al inicio del juego para inicializar el UI
     void Start()
     {
         //UItext = UItextObj.GetComponent<TextMeshProUGUI>();  // Obtener el componente TextMeshProUGUI del objeto UI
     }
 
-    public void StartUDPClient(TextMeshProUGUI ipAddress)
+    public void StartUDPClient()
     {
-        Debug.Log(ipAddress.text);
+        string finalIP = serverIP.text;
         udpClient = new UdpClient();
-        ipep = new IPEndPoint(IPAddress.Parse(ipAddress.text.Trim()), 9050);
+        ipep = new IPEndPoint(IPAddress.Parse(finalIP), 9050);
 
         //No se destruya 
-        DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(this.gameObject);
 
         // Start receiving data asynchronously
         udpClient.BeginReceive(Receive, null);
@@ -71,6 +75,7 @@ public class ClientUDP : MonoBehaviour
         t.playerRotation = paquete.playerRotation;
         t.playerCanonRotation = paquete.playerCanonRotation;
         t.playerID = paquete.playerID;
+        t.playerName = paquete.playerName;
         XmlSerializer serializer = new XmlSerializer(typeof(Packet));
         MemoryStream stream = new MemoryStream();
         serializer.Serialize(stream, t);
