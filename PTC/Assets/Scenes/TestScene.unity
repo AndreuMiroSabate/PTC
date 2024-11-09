@@ -548,8 +548,9 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 268878366}
   - {fileID: 249261209}
+  - {fileID: 268878366}
+  - {fileID: 1246386534}
   m_Father: {fileID: 780141447}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -605,6 +606,7 @@ GameObject:
   m_Component:
   - component: {fileID: 690899759}
   - component: {fileID: 690899758}
+  - component: {fileID: 690899760}
   m_Layer: 0
   m_Name: UDPController
   m_TagString: Untagged
@@ -626,6 +628,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UItextObj: {fileID: 1403297878}
   message: {fileID: 1418534525}
+  serverIP1: {fileID: 0}
+  serverIP2: {fileID: 0}
+  serverIP3: {fileID: 0}
+  serverIP4: {fileID: 0}
 --- !u!4 &690899759
 Transform:
   m_ObjectHideFlags: 0
@@ -641,6 +647,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &690899760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690899757}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7e8e958e30322c4c80b9006753ae2f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UItextObj: {fileID: 1403297878}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -934,7 +953,6 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1246386534}
   - {fileID: 680860724}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1142,7 +1160,7 @@ RectTransform:
   - {fileID: 103918299}
   - {fileID: 1358805673}
   - {fileID: 1403297879}
-  m_Father: {fileID: 780141447}
+  m_Father: {fileID: 680860724}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}

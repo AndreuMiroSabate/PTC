@@ -39,7 +39,13 @@ public class ClientUDP : MonoBehaviour
     string clientText = "";
     public TextMeshProUGUI message;
 
-    public TextMeshProUGUI serverIP;
+    public TextMeshProUGUI serverIP1;
+    [Space]
+    public TextMeshProUGUI serverIP2;
+    [Space]
+    public TextMeshProUGUI serverIP3;
+    [Space]
+    public TextMeshProUGUI serverIP4;
 
     // Función llamada al inicio del juego para inicializar el UI
     void Start()
@@ -49,13 +55,12 @@ public class ClientUDP : MonoBehaviour
 
     public void StartUDPClient()
     {
-        string finalIP = serverIP.text;
+        string finalIP = serverIP1.text + serverIP2.text + serverIP3.text + serverIP4.text;
         udpClient = new UdpClient();
-        ipep = new IPEndPoint(IPAddress.Parse(finalIP), 9050);
+        ipep = new IPEndPoint(IPAddress.Parse("192.168.1.101"), 9050);
 
         //No se destruya 
-        DontDestroyOnLoad(this.gameObject);
-
+        DontDestroyOnLoad(gameObject);
         // Start receiving data asynchronously
         udpClient.BeginReceive(Receive, null);
     }
@@ -122,5 +127,9 @@ public class ClientUDP : MonoBehaviour
 
         // Continue receiving data asynchronously
         udpClient.BeginReceive(Receive, null);
+    }
+    void OnApplicationQuit()
+    {
+        udpClient.Close();
     }
 }
