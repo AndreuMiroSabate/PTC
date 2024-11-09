@@ -535,7 +535,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &680860724
 RectTransform:
   m_ObjectHideFlags: 0
@@ -550,7 +550,6 @@ RectTransform:
   m_Children:
   - {fileID: 249261209}
   - {fileID: 268878366}
-  - {fileID: 1246386534}
   m_Father: {fileID: 780141447}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -628,6 +627,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UItextObj: {fileID: 1403297878}
   message: {fileID: 1418534525}
+  playerID: 
   serverIP1: {fileID: 0}
   serverIP2: {fileID: 0}
   serverIP3: {fileID: 0}
@@ -953,6 +953,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1246386534}
   - {fileID: 680860724}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1144,7 +1145,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1246386534
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1160,7 +1161,7 @@ RectTransform:
   - {fileID: 103918299}
   - {fileID: 1358805673}
   - {fileID: 1403297879}
-  m_Father: {fileID: 680860724}
+  m_Father: {fileID: 780141447}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
