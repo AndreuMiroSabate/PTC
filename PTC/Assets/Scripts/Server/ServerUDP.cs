@@ -42,39 +42,30 @@ public class ServerUDP : MonoBehaviour
     // Función que maneja la recepción de mensajes desde los clientes
     void Receive(IAsyncResult result)
     {
-        try
-        {
-            byte[] bytes = udpServer.EndReceive(result, ref remoteEndPoint);
+        //Deserializar el paquete --START--
 
-            if (bytes.Length > 0)
-            {
-                Debug.Log("Received data from client at IP: " + remoteEndPoint.Address.ToString());
+        byte[] bytes = udpServer.EndReceive(result, ref remoteEndPoint);
 
-                // Deserializar el paquete recibido
-                XmlSerializer serializer = new XmlSerializer(typeof(string));
-                MemoryStream stream = new MemoryStream(bytes);
-                string t = (string)serializer.Deserialize(stream);
+        XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+        var t = new Packet();
 
-                Debug.Log("Packet deserialized successfully from client!");
-                //Debug.Log("Client packet ID: " + t.playerID);
+        MemoryStream stream = new MemoryStream();
 
-                // Responder al cliente para confirmar la conexión
-                //Send(t, remoteEndPoint);
-            }
-            else
-            {
-                Debug.LogWarning("Received empty packet from client.");
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.LogError("Error receiving data: " + e.Message);
-        }
+        stream.Write(bytes, 0, bytes.Length);
+        stream.Seek(0, SeekOrigin.Begin);
 
-        // Continúa recibiendo datos de manera asíncrona
+        t = (Packet)serializer.Deserialize(stream);
+
+        //Deserializar el paquete --END--
+
+        Debug.Log("Received from client: " + t);
+
+        // Process the received data
+
+        // Continue receiving data asynchronously
         udpServer.BeginReceive(Receive, null);
+        Send(t, remoteEndPoint);
     }
-
 
     // Función que envía un mensaje de "Ping" al cliente
     void Send(Packet paquete, IPEndPoint Remote)

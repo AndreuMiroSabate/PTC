@@ -62,14 +62,13 @@ public class ClientUDP : MonoBehaviour
         Packet packet = new Packet();
         packet.playerID = playerID;
 
+        //No se destruya 
         DontDestroyOnLoad(gameObject);
 
         // Start receiving data asynchronously
-        Debug.Log("Starting to receive data from server...");
         udpClient.BeginReceive(Receive, null);
-
-        Debug.Log("Sending initial packet to server...");
-        Send(packet);  // Enviar el primer paquete al servidor como handshake
+        
+        Send(packet);
     }
 
 
@@ -95,8 +94,6 @@ public class ClientUDP : MonoBehaviour
         byte[] sendBytes = stream.ToArray();
         //Serializa paquete --END--
 
-        sendBytes = System.Text.Encoding.UTF8.GetBytes("Hello from client");
-
         // Send the message to the server
         udpClient.Send(sendBytes, sendBytes.Length, ipep);
     }
@@ -120,39 +117,58 @@ public class ClientUDP : MonoBehaviour
     // Función que recibe los mensajes enviados por el servidor y los muestra en la UI
     private void Receive(IAsyncResult result)
     {
-        try
+        //Deserializar el paquete --START--
+
+        byte[] bytes = udpClient.EndReceive(result, ref ipep); 
+
+        XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+        var t = new Packet();
+
+        MemoryStream stream = new MemoryStream();
+
+        if (bytes.Length > 0)
         {
-            // Recibe los datos del servidor
-            byte[] bytes = udpClient.EndReceive(result, ref ipep);
-
-            if (bytes.Length > 0)
-            {
-                Debug.Log("Received data from server!");
-
-                // Deserializar el paquete recibido
-                XmlSerializer serializer = new XmlSerializer(typeof(Packet));
-                MemoryStream stream = new MemoryStream(bytes);
-                Packet t = (Packet)serializer.Deserialize(stream);
-
-                Debug.Log("Packet deserialized successfully!");
-                Debug.Log("Received packet ID: " + t.playerID);
-
-                // Aquí puedes procesar el paquete y actualizar el cliente
-            }
-            else
-            {
-                Debug.LogWarning("Received empty packet from server.");
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.LogError("Error receiving data: " + e.Message);
+            stream.Write(bytes, 0, bytes.Length);
+            stream.Seek(0, SeekOrigin.Begin);
+            t = (Packet)serializer.Deserialize(stream);
         }
 
-        // Continúa recibiendo datos de manera asíncrona
+        //Deserializar el paquete --END--
+
+        Debug.Log("Received");
+
+        // Process the received data
+        foreach (var item in currentLobbyPlayers)
+        {
+            if (t.playerID.Equals(item.playerID))
+            {
+                item.transform.position = t.playerPosition;
+                item.transform.rotation = t.playerRotation;
+                //TODO
+
+                goto SkipInstanciate;
+            }
+        }
+
+        {
+            //Instancia un nuevo jugador 
+            PlayerScript ps = Instantiate(tankPref, t.playerPosition, t.playerRotation).GetComponent<PlayerScript>();
+
+            //Añadir el jugador a la lista de referencias
+            currentLobbyPlayers.Add(ps);
+
+            //Asignar los valores basicos al player (ID, nombre)
+            ps.playerID = t.playerID;
+            ps.playerName = t.playerName;
+
+            //Asignar al delegado la funcion del cliente de enviar mensajes 
+            ps.playerUpdate += Send;
+        }
+
+        SkipInstanciate:
+        // Continue receiving data asynchronously
         udpClient.BeginReceive(Receive, null);
     }
-
     void OnApplicationQuit()
     {
         udpClient.Close();
