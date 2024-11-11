@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tank_Movement : MonoBehaviour
+public class PlayerScript : MonoBehaviour
 {
-    public Rigidbody rb;
-    public Transform car;
+    public Rigidbody playerRb;
+    public Transform playerTrans;
     public float speed = 17;
 
     public delegate void UpdatePackages(Packet package);
@@ -14,6 +14,11 @@ public class Tank_Movement : MonoBehaviour
 
     Packet playerPacket;
 
+    [HideInInspector]
+    public string playerID;
+
+    [HideInInspector]
+    public string playerName;
 
     Vector3 rotationRight = new Vector3(0, 60, 0);
     Vector3 rotationLeft = new Vector3(0, -60, 0);
@@ -28,35 +33,33 @@ public class Tank_Movement : MonoBehaviour
         playerPacket.playerRotation = transform.rotation;
     }
 
-    void FixedUpdate()
-    {
-        if (Input.GetKey("w"))
-        {
-            transform.Translate(forward * speed * Time.deltaTime);
-        }
-        if (Input.GetKey("s"))
-        {
-            transform.Translate(backward * speed * Time.deltaTime);
-        }
-
-        if (Input.GetKey("d"))
-        {
-            Quaternion deltaRotationRight = Quaternion.Euler(rotationRight * Time.deltaTime);
-            rb.MoveRotation(rb.rotation * deltaRotationRight);
-        }
-
-        if (Input.GetKey("a"))
-        {
-            Quaternion deltaRotationLeft = Quaternion.Euler(rotationLeft * Time.deltaTime);
-            rb.MoveRotation(rb.rotation * deltaRotationLeft);
-        }
-
-    }
-
     private void Update()
     {
         playerUpdate?.Invoke(playerPacket);
     }
 
+    void FixedUpdate()
+    {
+        if (Input.GetKey("w")) //Vertical (tienen valores entre 1, -1)
+        {
+            transform.Translate(forward * speed * Time.deltaTime);
+        }
+        if (Input.GetKey("s")) //Quitar
+        {
+            transform.Translate(backward * speed * Time.deltaTime);
+        }
 
+        if (Input.GetKey("d")) //Horizontal (tienen valores entre 1, -1)
+        {
+            Quaternion deltaRotationRight = Quaternion.Euler(rotationRight * Time.deltaTime);
+            playerRb.MoveRotation(playerRb.rotation * deltaRotationRight);
+        }
+
+        if (Input.GetKey("a")) //Quitar
+        {
+            Quaternion deltaRotationLeft = Quaternion.Euler(rotationLeft * Time.deltaTime);
+            playerRb.MoveRotation(playerRb.rotation * deltaRotationLeft);
+        }
+
+    }
 }

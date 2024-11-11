@@ -1,12 +1,11 @@
-﻿using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using UnityEngine;
-using System.Threading;
-using TMPro;
+﻿using TMPro;
 using System;
-using System.Xml.Serialization;
 using System.IO;
+using System.Net;
+using UnityEngine;
+using System.Net.Sockets;
+using System.Xml.Serialization;
+using System.Collections.Generic;
 
 public enum Message
 { 
@@ -34,19 +33,17 @@ public class ClientUDP : MonoBehaviour
     UdpClient udpClient;
     IPEndPoint ipep;
 
-    public GameObject UItextObj;
-    TextMeshProUGUI UItext;
-    string clientText = "";
-    public TextMeshProUGUI message;
+    [HideInInspector]
     public string playerID;
 
+    [Space]
     public TextMeshProUGUI serverIP1;
-    [Space]
-    public TextMeshProUGUI serverIP2;
-    [Space]
-    public TextMeshProUGUI serverIP3;
-    [Space]
-    public TextMeshProUGUI serverIP4;
+
+    [Header("PLAYER PREFAB")]
+    public GameObject tankPref;
+
+    //Guarda una lista de referencias de todos los players en la lobby/escena
+    List<PlayerScript> currentLobbyPlayers = new List<PlayerScript>();
 
     // Función llamada al inicio del juego para inicializar el UI
     void Start()
@@ -56,7 +53,7 @@ public class ClientUDP : MonoBehaviour
 
     public void StartUDPClient()
     {
-        string finalIP = serverIP1.text + serverIP2.text + serverIP3.text + serverIP4.text;
+        string finalIP = serverIP1.text.Trim();
         udpClient = new UdpClient();
         ipep = new IPEndPoint(IPAddress.Parse("192.168.1.101"), 9050);
 
@@ -98,24 +95,26 @@ public class ClientUDP : MonoBehaviour
     }
 
     // Función que permite enviar un mensaje personalizado desde la UI al servidor
-    public void SendMessage()
-    {
-        // Obtener el mensaje desde el campo de texto de la UI
-        string handshake = message.text;
+    //public void SendMessage()
+    //{
+    //    // Obtener el mensaje desde el campo de texto de la UI
+    //    string handshake = message.text;
 
-        byte[] sendBytes = System.Text.Encoding.UTF8.GetBytes(handshake);
+    //    byte[] sendBytes = System.Text.Encoding.UTF8.GetBytes(handshake);
 
-        // Send the message to the server
-        udpClient.Send(sendBytes, sendBytes.Length, ipep);
+    //    // Send the message to the server
+    //    udpClient.Send(sendBytes, sendBytes.Length, ipep);
 
-        // Actualizar el texto del cliente con el mensaje enviado
-        clientText += "\n" + message.text;
-        Debug.Log("Sent to server: " + message);
-    }
+    //    // Actualizar el texto del cliente con el mensaje enviado
+    //    clientText += "\n" + message.text;
+    //    Debug.Log("Sent to server: " + message);
+    //}
 
     // Función que recibe los mensajes enviados por el servidor y los muestra en la UI
     private void Receive(IAsyncResult result)
     {
+        //Deserializar el paquete --START--
+
         byte[] bytes = new byte[1024];
 
         XmlSerializer serializer = new XmlSerializer(typeof(Packet));
@@ -128,10 +127,37 @@ public class ClientUDP : MonoBehaviour
 
         t = (Packet)serializer.Deserialize(stream);
 
-        Debug.Log("Received from server: " + t);
+        //Deserializar el paquete --END--
 
         // Process the received data
+        foreach (var item in currentLobbyPlayers)
+        {
+            if (t.playerID.Equals(item.playerID))
+            {
+                item.transform.position = t.playerPosition;
+                item.transform.rotation = t.playerRotation;
+                //TODO
 
+                goto SkipInstanciate;
+            }
+        }
+
+        {
+            //Instancia un nuevo jugador 
+            PlayerScript ps = Instantiate(tankPref, t.playerPosition, t.playerRotation).GetComponent<PlayerScript>();
+
+            //Añadir el jugador a la lista de referencias
+            currentLobbyPlayers.Add(ps);
+
+            //Asignar los valores basicos al player (ID, nombre)
+            ps.playerID = t.playerID;
+            ps.playerName = t.playerName;
+
+            //Asignar al delegado la funcion del cliente de enviar mensajes 
+            ps.playerUpdate += Send;
+        }
+
+        SkipInstanciate:
         // Continue receiving data asynchronously
         udpClient.BeginReceive(Receive, null);
     }

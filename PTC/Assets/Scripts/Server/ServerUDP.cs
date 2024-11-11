@@ -32,7 +32,6 @@ public class ServerUDP : MonoBehaviour
         udpServer = new UdpClient(port);
         remoteEndPoint = new IPEndPoint(IPAddress.Any, port);
        
-
         Debug.Log("Server started. Waiting for messages...");
  
         DontDestroyOnLoad(gameObject);

@@ -2317,12 +2317,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ded76a535ab860498072928ea7a5925, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UItextObj: {fileID: 0}
-  message: {fileID: 1188217470}
+  playerID: 
   serverIP1: {fileID: 1812636392}
-  serverIP2: {fileID: 1689117450}
-  serverIP3: {fileID: 1095729819}
-  serverIP4: {fileID: 424261427}
+  tankPref: {fileID: 4417282915845898001, guid: 968484b5a196bbd429724a68e6edf65d, type: 3}
 --- !u!4 &1047912872
 Transform:
   m_ObjectHideFlags: 0
