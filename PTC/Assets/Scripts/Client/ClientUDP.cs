@@ -54,13 +54,14 @@ public class ClientUDP : MonoBehaviour
     public void StartUDPClient()
     {
         string finalIP = serverIP1.text.Trim();
-        udpClient = new UdpClient();
-        ipep = new IPEndPoint(IPAddress.Parse("192.168.1.101"), 9050);
+        ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9050);
+        udpClient = new UdpClient(ipep);
 
         playerID = Guid.NewGuid().ToString();
 
         Packet packet = new Packet();
         packet.playerID = playerID;
+        packet.playerName = "";
 
         //No se destruya 
         DontDestroyOnLoad(gameObject);
@@ -70,7 +71,6 @@ public class ClientUDP : MonoBehaviour
         
         Send(packet);
     }
-
 
     // Función que actualiza el texto mostrado en la UI
     void Update()
@@ -117,25 +117,32 @@ public class ClientUDP : MonoBehaviour
     // Función que recibe los mensajes enviados por el servidor y los muestra en la UI
     private void Receive(IAsyncResult result)
     {
-        //Deserializar el paquete --START--
-
-        byte[] bytes = udpClient.EndReceive(result, ref ipep); 
-
-        XmlSerializer serializer = new XmlSerializer(typeof(Packet));
-        var t = new Packet();
-
-        MemoryStream stream = new MemoryStream();
-
-        if (bytes.Length > 0)
+        Packet t = new Packet();
+        try
         {
-            stream.Write(bytes, 0, bytes.Length);
-            stream.Seek(0, SeekOrigin.Begin);
-            t = (Packet)serializer.Deserialize(stream);
+            byte[] bytes = udpClient.EndReceive(result, ref ipep);
+
+            if (bytes.Length > 0)
+            {
+                Debug.Log("Received data from server");
+
+                using (MemoryStream stream = new MemoryStream(bytes))
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+                    t = (Packet)serializer.Deserialize(stream);
+
+                    Debug.Log("Packet deserialized successfully: Player ID - " + t.playerID);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Error in receiving data: " + e.Message);
         }
 
-        //Deserializar el paquete --END--
-
         Debug.Log("Received");
+
+        udpClient.BeginReceive(Receive, null);
 
         // Process the received data
         foreach (var item in currentLobbyPlayers)
@@ -146,29 +153,26 @@ public class ClientUDP : MonoBehaviour
                 item.transform.rotation = t.playerRotation;
                 //TODO
 
-                goto SkipInstanciate;
+                return;
             }
         }
 
         {
             //Instancia un nuevo jugador 
-            PlayerScript ps = Instantiate(tankPref, t.playerPosition, t.playerRotation).GetComponent<PlayerScript>();
+            //PlayerScript ps = Instantiate(tankPref, t.playerPosition, t.playerRotation).GetComponent<PlayerScript>();
+            //Instantiate(tankPref, t.playerPosition, t.playerRotation);
+            ////Añadir el jugador a la lista de referencias
+            //currentLobbyPlayers.Add(ps);
 
-            //Añadir el jugador a la lista de referencias
-            currentLobbyPlayers.Add(ps);
-
-            //Asignar los valores basicos al player (ID, nombre)
-            ps.playerID = t.playerID;
-            ps.playerName = t.playerName;
+            ////Asignar los valores basicos al player (ID, nombre)
+            //ps.playerID = t.playerID;
+            //ps.playerName = t.playerName;
 
             //Asignar al delegado la funcion del cliente de enviar mensajes 
-            ps.playerUpdate += Send;
+            //ps.playerUpdate += Send;
         }
-
-        SkipInstanciate:
-        // Continue receiving data asynchronously
-        udpClient.BeginReceive(Receive, null);
     }
+
     void OnApplicationQuit()
     {
         udpClient.Close();

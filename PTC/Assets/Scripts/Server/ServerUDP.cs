@@ -22,8 +22,8 @@ public class ServerUDP : MonoBehaviour
     // Función para iniciar el servidor UDP
     public void startServer(int port = 9050)
     {
-        udpServer = new UdpClient(port);
         remoteEndPoint = new IPEndPoint(IPAddress.Any, port);
+        udpServer = new UdpClient(remoteEndPoint);
        
         Debug.Log("Server started. Waiting for messages...");
  
@@ -42,29 +42,33 @@ public class ServerUDP : MonoBehaviour
     // Función que maneja la recepción de mensajes desde los clientes
     void Receive(IAsyncResult result)
     {
-        //Deserializar el paquete --START--
+        Packet t = new Packet();
+        try
+        {
+            byte[] bytes = udpServer.EndReceive(result, ref remoteEndPoint);
 
-        byte[] bytes = udpServer.EndReceive(result, ref remoteEndPoint);
+            if (bytes.Length > 0)
+            {
+                Debug.Log("Received data from client");
 
-        XmlSerializer serializer = new XmlSerializer(typeof(Packet));
-        var t = new Packet();
+                using (MemoryStream stream = new MemoryStream(bytes))
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+                    t = (Packet)serializer.Deserialize(stream);
 
-        MemoryStream stream = new MemoryStream();
+                    Debug.Log("Packet deserialized successfully from client: Player ID - " + t.playerID);
+                    // Aquí puedes procesar el paquete
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Error in receiving data: " + e.Message);
+        }
 
-        stream.Write(bytes, 0, bytes.Length);
-        stream.Seek(0, SeekOrigin.Begin);
-
-        t = (Packet)serializer.Deserialize(stream);
-
-        //Deserializar el paquete --END--
-
-        Debug.Log("Received from client: " + t);
-
-        // Process the received data
-
-        // Continue receiving data asynchronously
-        udpServer.BeginReceive(Receive, null);
         Send(t, remoteEndPoint);
+
+        udpServer.BeginReceive(Receive, null);
     }
 
     // Función que envía un mensaje de "Ping" al cliente
