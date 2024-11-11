@@ -18,13 +18,6 @@ public class ServerUDP : MonoBehaviour
     TextMeshProUGUI UItext;
     string serverText;
 
-    List<Packet> clients;
-
-    // Función llamada al inicio del juego para inicializar el UI
-    void Start()
-    {
-        //UItext = UItextObj.GetComponent<TextMeshProUGUI>();  // Obtener el componente TextMeshProUGUI del objeto UI
-    }
 
     // Función para iniciar el servidor UDP
     public void startServer(int port = 9050)
@@ -49,7 +42,9 @@ public class ServerUDP : MonoBehaviour
     // Función que maneja la recepción de mensajes desde los clientes
     void Receive(IAsyncResult result)
     {
-        byte[] bytes = new byte[1024];
+        //Deserializar el paquete --START--
+
+        byte[] bytes = udpServer.EndReceive(result, ref remoteEndPoint);
 
         XmlSerializer serializer = new XmlSerializer(typeof(Packet));
         var t = new Packet();
@@ -61,18 +56,22 @@ public class ServerUDP : MonoBehaviour
 
         t = (Packet)serializer.Deserialize(stream);
 
+        //Deserializar el paquete --END--
+
         Debug.Log("Received from client: " + t);
 
         // Process the received data
 
         // Continue receiving data asynchronously
         udpServer.BeginReceive(Receive, null);
-        Send(t,remoteEndPoint);
+        Send(t, remoteEndPoint);
     }
 
     // Función que envía un mensaje de "Ping" al cliente
     void Send(Packet paquete, IPEndPoint Remote)
     {
+        //Serializa paquete --START--
+
         var t = new Packet();
         t.playerPosition = paquete.playerPosition;
         t.playerRotation = paquete.playerRotation;
@@ -81,6 +80,8 @@ public class ServerUDP : MonoBehaviour
         MemoryStream stream = new MemoryStream();
         serializer.Serialize(stream, t);
         byte[] sendBytes = stream.ToArray();
+
+        //Serializa paquete --END--
 
         // Send the message to the server
         udpServer.Send(sendBytes, sendBytes.Length, Remote);

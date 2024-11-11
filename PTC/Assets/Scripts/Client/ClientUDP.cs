@@ -64,8 +64,10 @@ public class ClientUDP : MonoBehaviour
 
         //No se destruya 
         DontDestroyOnLoad(gameObject);
+
         // Start receiving data asynchronously
         udpClient.BeginReceive(Receive, null);
+        
         Send(packet);
     }
 
@@ -79,6 +81,7 @@ public class ClientUDP : MonoBehaviour
     // Función que envía mensajes al servidor
     void Send(Packet paquete)
     {
+        //Serializa paquete --START--
         var t = new Packet();
         t.playerPosition = paquete.playerPosition;
         t.playerRotation = paquete.playerRotation;
@@ -89,6 +92,7 @@ public class ClientUDP : MonoBehaviour
         MemoryStream stream = new MemoryStream();
         serializer.Serialize(stream, t);
         byte[] sendBytes = stream.ToArray();
+        //Serializa paquete --END--
 
         // Send the message to the server
         udpClient.Send(sendBytes, sendBytes.Length, ipep);
@@ -115,19 +119,23 @@ public class ClientUDP : MonoBehaviour
     {
         //Deserializar el paquete --START--
 
-        byte[] bytes = new byte[1024];
+        byte[] bytes = udpClient.EndReceive(result, ref ipep); 
 
         XmlSerializer serializer = new XmlSerializer(typeof(Packet));
         var t = new Packet();
 
         MemoryStream stream = new MemoryStream();
 
-        stream.Write(bytes, 0, bytes.Length);
-        stream.Seek(0, SeekOrigin.Begin);
-
-        t = (Packet)serializer.Deserialize(stream);
+        if (bytes.Length > 0)
+        {
+            stream.Write(bytes, 0, bytes.Length);
+            stream.Seek(0, SeekOrigin.Begin);
+            t = (Packet)serializer.Deserialize(stream);
+        }
 
         //Deserializar el paquete --END--
+
+        Debug.Log("Received");
 
         // Process the received data
         foreach (var item in currentLobbyPlayers)
