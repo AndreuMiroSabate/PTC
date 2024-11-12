@@ -6,6 +6,8 @@ using UnityEngine;
 using System.Net.Sockets;
 using System.Xml.Serialization;
 using System.Collections.Generic;
+//using System.IO.Ports;
+using System.Text;
 
 public enum Message
 { 
@@ -68,8 +70,12 @@ public class ClientUDP : MonoBehaviour
 
         // Start receiving data asynchronously
         udpClient.BeginReceive(Receive, null);
-        
-        Send(packet);
+        XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+        MemoryStream stream = new MemoryStream();
+        serializer.Serialize(stream, packet);
+        byte[] sendBytes = stream.ToArray();
+        udpClient.Send(sendBytes, sendBytes.Length, ipep);
+        //Send(packet);
     }
 
     // Función que actualiza el texto mostrado en la UI
