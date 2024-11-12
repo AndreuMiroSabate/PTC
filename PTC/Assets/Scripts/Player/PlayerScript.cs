@@ -62,4 +62,9 @@ public class PlayerScript : MonoBehaviour
         }
 
     }
+    public void SetInitialValues(string PlayerID, string PlayerName)
+    {
+        playerPacket.playerID = playerID = PlayerID;
+        playerPacket.playerName = playerName = PlayerName;
+    }
 }

@@ -80,6 +80,8 @@ public class ServerUDP : MonoBehaviour
         t.playerPosition = paquete.playerPosition;
         t.playerRotation = paquete.playerRotation;
         t.playerCanonRotation = paquete.playerCanonRotation;
+        t.playerID = paquete.playerID;
+        t.playerName = paquete.playerName;
         XmlSerializer serializer = new XmlSerializer(typeof(Packet));
         MemoryStream stream = new MemoryStream();
         serializer.Serialize(stream, t);

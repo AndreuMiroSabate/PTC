@@ -6,11 +6,12 @@ using UnityEngine;
 using System.Net.Sockets;
 using System.Xml.Serialization;
 using System.Collections.Generic;
-//using System.IO.Ports;
 using System.Text;
+using System.Collections.Concurrent;
+using System.Collections;
 
 public enum Message
-{ 
+{
     CLIENT,
     SERVER
 }
@@ -22,11 +23,11 @@ public struct Packet
     public Quaternion playerRotation;
     public Quaternion playerCanonRotation;
 
-    // vida
+    // Player health
     public float life;
-    // id player
+    // Player ID
     public string playerID;
-    //nombre del player
+    // Player name
     public string playerName;
 }
 
@@ -44,13 +45,20 @@ public class ClientUDP : MonoBehaviour
     [Header("PLAYER PREFAB")]
     public GameObject tankPref;
 
-    //Guarda una lista de referencias de todos los players en la lobby/escena
+    // Stores references to all players in the lobby/scene
     List<PlayerScript> currentLobbyPlayers = new List<PlayerScript>();
 
-    // Función llamada al inicio del juego para inicializar el UI
+    // Thread-safe queue for incoming packets
+    private ConcurrentQueue<Packet> receivedPackets = new ConcurrentQueue<Packet>();
+
+    // Flag to indicate if the client is disposed
+    private bool isDisposed = false;
+
+    // Initialize the client
     void Start()
     {
-        //UItext = UItextObj.GetComponent<TextMeshProUGUI>();  // Obtener el componente TextMeshProUGUI del objeto UI
+        // Uncomment this for testing if you need to verify tankPref setup
+        // TestInstantiatePlayer();
     }
 
     public void StartUDPClient()
@@ -64,6 +72,7 @@ public class ClientUDP : MonoBehaviour
         Packet packet = new Packet();
         packet.playerID = playerID;
         packet.playerName = "jiji";
+        packet.playerPosition = new Vector3(0, 5, 0);
 
         //No se destruya 
         DontDestroyOnLoad(gameObject);
@@ -80,111 +89,129 @@ public class ClientUDP : MonoBehaviour
 
     }
 
-    // Función que actualiza el texto mostrado en la UI
     void Update()
     {
-        //UItext.text = clientText;  // Actualizar el texto en el UI con el mensaje recibido
+        // Process all received packets in the queue
+        while (receivedPackets.TryDequeue(out Packet packet))
+        {
+            ProcessPacket(packet);
+        }
     }
 
-    // Función que envía mensajes al servidor
-    void Send(Packet paquete)
+    // Send a packet to the server
+    void Send(Packet packet)
     {
-        //Serializa paquete --START--
-        var t = new Packet();
-        t.playerPosition = paquete.playerPosition;
-        t.playerRotation = paquete.playerRotation;
-        t.playerCanonRotation = paquete.playerCanonRotation;
-        t.playerID = paquete.playerID;
-        t.playerName = paquete.playerName;
         XmlSerializer serializer = new XmlSerializer(typeof(Packet));
         MemoryStream stream = new MemoryStream();
-        serializer.Serialize(stream, t);
+        serializer.Serialize(stream, packet);
         byte[] sendBytes = stream.ToArray();
-        //Serializa paquete --END--
 
         // Send the message to the server
         udpClient.Send(sendBytes, sendBytes.Length, ipep);
     }
 
-    // Función que permite enviar un mensaje personalizado desde la UI al servidor
-    //public void SendMessage()
-    //{
-    //    // Obtener el mensaje desde el campo de texto de la UI
-    //    string handshake = message.text;
-
-    //    byte[] sendBytes = System.Text.Encoding.UTF8.GetBytes(handshake);
-
-    //    // Send the message to the server
-    //    udpClient.Send(sendBytes, sendBytes.Length, ipep);
-
-    //    // Actualizar el texto del cliente con el mensaje enviado
-    //    clientText += "\n" + message.text;
-    //    Debug.Log("Sent to server: " + message);
-    //}
-
-    // Función que recibe los mensajes enviados por el servidor y los muestra en la UI
+    // Receive messages from the server
     private void Receive(IAsyncResult result)
     {
-        Packet t = new Packet();
+        if (isDisposed) return; // Stop execution if the client is disposed
+
         try
         {
             byte[] bytes = udpClient.EndReceive(result, ref ipep);
-
             if (bytes.Length > 0)
             {
                 Debug.Log("Received data from server");
 
+                Packet packet;
                 using (MemoryStream stream = new MemoryStream(bytes))
                 {
                     XmlSerializer serializer = new XmlSerializer(typeof(Packet));
-                    t = (Packet)serializer.Deserialize(stream);
-
-                    Debug.Log("Packet deserialized successfully: Player ID - " + t.playerID);
+                    packet = (Packet)serializer.Deserialize(stream);
+                    Debug.Log("Deserialized packet successfully: Player ID - " + packet.playerID);
                 }
+
+                // Enqueue the packet for processing on the main thread
+                receivedPackets.Enqueue(packet);
             }
+        }
+        catch (ObjectDisposedException)
+        {
+            Debug.LogWarning("UdpClient is disposed, stopping Receive.");
+            return;
         }
         catch (Exception e)
         {
             Debug.LogError("Error in receiving data: " + e.Message);
         }
 
-        Debug.Log("Received");
-
-        udpClient.BeginReceive(Receive, udpClient);
-
-        // Process the received data
-        foreach (var item in currentLobbyPlayers)
+        // Continue listening for incoming data if not disposed
+        if (!isDisposed)
         {
-            if (t.playerID.Equals(item.playerID))
+            try
             {
-                item.transform.position = t.playerPosition;
-                item.transform.rotation = t.playerRotation;
-                //TODO
-
-                return;
+                udpClient.BeginReceive(Receive, null);
+            }
+            catch (ObjectDisposedException)
+            {
+                Debug.LogWarning("Attempted to BeginReceive on a disposed UdpClient.");
             }
         }
-        InstancePlayer(t);
     }
 
-    void InstancePlayer(Packet t)
+    // Process each packet on the main thread
+    private void ProcessPacket(Packet packet)
     {
-        //Instancia un nuevo jugador
-        PlayerScript ps = Instantiate(tankPref, Vector3.zero, Quaternion.identity).GetComponent<PlayerScript>();
-        //Instantiate(tankPref, t.playerPosition, t.playerRotation);
-        //Añadir el jugador a la lista de referencias
-        currentLobbyPlayers.Add(ps);
+        // Check if the player already exists
+        bool playerExists = false;
+        foreach (var player in currentLobbyPlayers)
+        {
+            if (packet.playerID.Equals(player.playerID))
+            {
+                // Update existing player's position and rotation
+                player.transform.position = packet.playerPosition;
+                player.transform.rotation = packet.playerRotation;
+                // Update cannon rotation if needed
+                playerExists = true;
+                break;
+            }
+        }
 
-        //Asignar los valores basicos al player (ID, nombre)
-        ps.playerID = t.playerID;
-        ps.playerName = t.playerName;
-
-        //Asignar al delegado la funcion del cliente de enviar mensajes
-        //ps.playerUpdate += Send;
+        // If player does not exist, instantiate a new player
+        if (!playerExists)
+        {
+            StartCoroutine(InstancePlayer(packet));
+            
+        }
     }
 
+    IEnumerator InstancePlayer(Packet packet)
+    {
+        yield return new WaitForSeconds(1);
+        Debug.Log("Instantiating new player...");
+        GameObject instantiatedObj = Instantiate(tankPref, packet.playerPosition, packet.playerRotation);
+        PlayerScript playerScript = instantiatedObj.GetComponent<PlayerScript>();
+        if (playerScript != null)
+        {
+            // Add the player to the lobby list and set attributes
+            currentLobbyPlayers.Add(playerScript);
+            playerScript.SetInitialValues(packet.playerID, packet.playerName);
+            playerScript.playerUpdate += Send;
+            Debug.Log("Player instantiated and added to lobby: " + playerScript.playerID);
+
+        }
+        else
+        {
+            Debug.LogError("Failed to get PlayerScript component from instantiated object.");
+        }
+    }
+    // Safely close the UDP client on application exit
     void OnApplicationQuit()
     {
-        udpClient?.Close();
+        isDisposed = true;
+        if (udpClient != null)
+        {
+            udpClient.Close();
+            udpClient.Dispose();
+        }
     }
 }
