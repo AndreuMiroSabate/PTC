@@ -30,7 +30,7 @@ public class ServerUDP : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         // Start receiving data asynchronously
-        udpServer.BeginReceive(Receive, null);
+        udpServer.BeginReceive(Receive, udpServer);
     }
 
     // Actualización del UI con el texto del servidor
@@ -68,7 +68,7 @@ public class ServerUDP : MonoBehaviour
 
         Send(t, remoteEndPoint);
 
-        udpServer.BeginReceive(Receive, null);
+        udpServer.BeginReceive(Receive, udpServer);
     }
 
     // Función que envía un mensaje de "Ping" al cliente
