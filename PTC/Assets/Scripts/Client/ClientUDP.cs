@@ -69,13 +69,15 @@ public class ClientUDP : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         // Start receiving data asynchronously
-        udpClient.BeginReceive(Receive, null);
-        XmlSerializer serializer = new XmlSerializer(typeof(Packet));
-        MemoryStream stream = new MemoryStream();
-        serializer.Serialize(stream, packet);
-        byte[] sendBytes = stream.ToArray();
-        udpClient.Send(sendBytes, sendBytes.Length, ipep);
-        //Send(packet);
+        //udpClient.BeginReceive(Receive, null);
+        //XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+        //MemoryStream stream = new MemoryStream();
+        //serializer.Serialize(stream, packet);
+        //byte[] sendBytes = stream.ToArray();
+        //udpClient.Send(sendBytes, sendBytes.Length, ipep);
+        udpClient.BeginReceive(Receive, udpClient);
+        Send(packet);
+
     }
 
     // Función que actualiza el texto mostrado en la UI
@@ -148,7 +150,7 @@ public class ClientUDP : MonoBehaviour
 
         Debug.Log("Received");
 
-        udpClient.BeginReceive(Receive, null);
+        udpClient.BeginReceive(Receive, udpClient);
 
         // Process the received data
         foreach (var item in currentLobbyPlayers)
@@ -162,34 +164,27 @@ public class ClientUDP : MonoBehaviour
                 return;
             }
         }
+        InstancePlayer(t);
+    }
 
-        {
-            //Instancia un nuevo jugador
-            PlayerScript ps = Instantiate(tankPref, t.playerPosition, t.playerRotation).GetComponent<PlayerScript>();
-            Instantiate(tankPref, t.playerPosition, t.playerRotation);
-            //Añadir el jugador a la lista de referencias
-            currentLobbyPlayers.Add(ps);
+    void InstancePlayer(Packet t)
+    {
+        //Instancia un nuevo jugador
+        PlayerScript ps = Instantiate(tankPref, Vector3.zero, Quaternion.identity).GetComponent<PlayerScript>();
+        //Instantiate(tankPref, t.playerPosition, t.playerRotation);
+        //Añadir el jugador a la lista de referencias
+        currentLobbyPlayers.Add(ps);
 
-            //Asignar los valores basicos al player (ID, nombre)
-            ps.playerID = t.playerID;
-            ps.playerName = t.playerName;
+        //Asignar los valores basicos al player (ID, nombre)
+        ps.playerID = t.playerID;
+        ps.playerName = t.playerName;
 
-            //Asignar al delegado la funcion del cliente de enviar mensajes
-            //ps.playerUpdate += Send;
-
-            XmlSerializer serializer = new XmlSerializer(typeof(Packet));
-            MemoryStream stream = new MemoryStream();
-            serializer.Serialize(stream, ps);
-            byte[] sendBytes = stream.ToArray();
-            //Serializa paquete --END--
-
-            // Send the message to the server
-            udpClient.Send(sendBytes, sendBytes.Length, ipep);
-        }
+        //Asignar al delegado la funcion del cliente de enviar mensajes
+        //ps.playerUpdate += Send;
     }
 
     void OnApplicationQuit()
     {
-        udpClient.Close();
+        udpClient?.Close();
     }
 }
