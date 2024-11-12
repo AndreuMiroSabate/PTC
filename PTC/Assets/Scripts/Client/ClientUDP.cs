@@ -63,7 +63,7 @@ public class ClientUDP : MonoBehaviour
 
         Packet packet = new Packet();
         packet.playerID = playerID;
-        packet.playerName = "";
+        packet.playerName = "jiji";
 
         //No se destruya 
         DontDestroyOnLoad(gameObject);
@@ -164,18 +164,27 @@ public class ClientUDP : MonoBehaviour
         }
 
         {
-            //Instancia un nuevo jugador 
-            //PlayerScript ps = Instantiate(tankPref, t.playerPosition, t.playerRotation).GetComponent<PlayerScript>();
-            //Instantiate(tankPref, t.playerPosition, t.playerRotation);
-            ////Añadir el jugador a la lista de referencias
-            //currentLobbyPlayers.Add(ps);
+            //Instancia un nuevo jugador
+            PlayerScript ps = Instantiate(tankPref, t.playerPosition, t.playerRotation).GetComponent<PlayerScript>();
+            Instantiate(tankPref, t.playerPosition, t.playerRotation);
+            //Añadir el jugador a la lista de referencias
+            currentLobbyPlayers.Add(ps);
 
-            ////Asignar los valores basicos al player (ID, nombre)
-            //ps.playerID = t.playerID;
-            //ps.playerName = t.playerName;
+            //Asignar los valores basicos al player (ID, nombre)
+            ps.playerID = t.playerID;
+            ps.playerName = t.playerName;
 
-            //Asignar al delegado la funcion del cliente de enviar mensajes 
+            //Asignar al delegado la funcion del cliente de enviar mensajes
             //ps.playerUpdate += Send;
+
+            XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+            MemoryStream stream = new MemoryStream();
+            serializer.Serialize(stream, ps);
+            byte[] sendBytes = stream.ToArray();
+            //Serializa paquete --END--
+
+            // Send the message to the server
+            udpClient.Send(sendBytes, sendBytes.Length, ipep);
         }
     }
 
