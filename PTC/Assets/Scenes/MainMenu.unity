@@ -2298,6 +2298,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1047912872}
   - component: {fileID: 1047912871}
+  - component: {fileID: 1047912873}
   m_Layer: 0
   m_Name: UDP_Client
   m_TagString: Untagged
@@ -2335,6 +2336,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1047912873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1047912870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4ab882514b119f4b8a0018f5cc95087, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tankPref: {fileID: 0}
 --- !u!1 &1095729816
 GameObject:
   m_ObjectHideFlags: 0
@@ -3898,18 +3912,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1047912871}
-        m_TargetAssemblyTypeName: ClientUDP, Assembly-CSharp
-        m_MethodName: InstancePlayer
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!114 &1596411429
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5010,6 +5012,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1903036504}
   - component: {fileID: 1903036503}
+  - component: {fileID: 1903036505}
   m_Layer: 0
   m_Name: UDP_Server
   m_TagString: Untagged
@@ -5045,6 +5048,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1903036505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1903036501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a145f3db9475b2478fab08d74d89b82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1956441193
 GameObject:
   m_ObjectHideFlags: 0
