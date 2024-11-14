@@ -57,6 +57,9 @@ public class Server : MonoBehaviour
                         t = (Packet)serializer.Deserialize(stream);
 
                         Debug.Log("Packet deserialized successfully from client: Player ID - " + t.playerID);
+
+                        Thread sendPing = new Thread(() => Send(t, Remote));
+                        sendPing.Start();
                     }
                 }
             }
@@ -64,9 +67,6 @@ public class Server : MonoBehaviour
             {
                 Debug.LogError("Error in receiving data: " + e.Message);
             }
-
-            Thread sendPing = new Thread(() => Send(t,Remote));
-            sendPing.Start();
         }
     }
 

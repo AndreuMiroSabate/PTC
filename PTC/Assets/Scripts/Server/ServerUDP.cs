@@ -15,8 +15,6 @@ public class ServerUDP : MonoBehaviour
     private IPEndPoint remoteEndPoint;
 
     public GameObject UItextObj;
-    TextMeshProUGUI UItext;
-    string serverText;
 
 
     // Función para iniciar el servidor UDP
@@ -31,12 +29,6 @@ public class ServerUDP : MonoBehaviour
 
         // Start receiving data asynchronously
         udpServer.BeginReceive(Receive, udpServer);
-    }
-
-    // Actualización del UI con el texto del servidor
-    void Update()
-    {
-        //UItext.text = serverText;  // Actualizar el texto mostrado en el UI
     }
 
     // Función que maneja la recepción de mensajes desde los clientes

@@ -37,8 +37,13 @@ public class Client : MonoBehaviour
         initial.playerID = playerID;
         initial.playerName = "jiji";
         initial.playerPosition = new Vector3(0, 5, 0);
+
         Thread mainThread = new Thread(() => Send(initial));
         mainThread.Start();
+
+        Thread receive = new Thread(Receive);
+        receive.Start();
+
         Debug.Log("Client Started");
     }
 
@@ -61,9 +66,6 @@ public class Client : MonoBehaviour
         serializer.Serialize(stream, packet);
         byte[] sendBytes = stream.ToArray();
         socket.SendTo(sendBytes, ipep);
-
-        Thread receive = new Thread(Receive);
-        receive.Start();
     }
 
     void Receive()
@@ -72,7 +74,7 @@ public class Client : MonoBehaviour
         byte[] data = new byte[1024];
         Packet t = new Packet();
 
-        IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+        IPEndPoint sender = new IPEndPoint(IPAddress.Any, 9050);
         EndPoint Remote = (EndPoint)(sender);
 
         while (true)
@@ -81,7 +83,7 @@ public class Client : MonoBehaviour
             {
                 recv = socket.ReceiveFrom(data, ref Remote);
 
-                if (data.Length > 0)
+                if (recv > 0)
                 {
                     Debug.Log("Received data from client");
 
@@ -91,7 +93,6 @@ public class Client : MonoBehaviour
                         t = (Packet)serializer.Deserialize(stream);
 
                         Debug.Log("Packet deserialized successfully from client: Player ID - " + t.playerID);
-
                     }
                     receivedPackets.Enqueue(t);
                 }
@@ -100,9 +101,6 @@ public class Client : MonoBehaviour
             {
                 Debug.LogError("Error in receiving data: " + e.Message);
             }
-
-            Thread sendPing = new Thread(() => Send(t));
-            sendPing.Start();
         }
     }
 
@@ -127,7 +125,6 @@ public class Client : MonoBehaviour
         if (!playerExists)
         {
             StartCoroutine(InstancePlayer(packet));
-
         }
     }
 
