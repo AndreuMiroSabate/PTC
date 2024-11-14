@@ -14,7 +14,6 @@ using System.IO;
 public class Client : MonoBehaviour
 {
     Socket socket;
-    string clientText;
     string playerID;
 
     [Header("PLAYER PREFAB")]
@@ -44,6 +43,9 @@ public class Client : MonoBehaviour
         Thread receive = new Thread(Receive);
         receive.Start();
 
+        //
+        DontDestroyOnLoad(gameObject);
+
         Debug.Log("Client Started");
     }
 
@@ -57,7 +59,7 @@ public class Client : MonoBehaviour
 
     void Send(Packet packet)
     {
-        IPEndPoint ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9050);
+        IPEndPoint ipep = new IPEndPoint(IPAddress.Parse("10.0.53.21"), 9050);
 
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
@@ -85,15 +87,15 @@ public class Client : MonoBehaviour
 
                 if (recv > 0)
                 {
-                    Debug.Log("Received data from client");
+                    Debug.Log("Received data from Server");
 
-                    using (MemoryStream stream = new MemoryStream(data))
-                    {
-                        XmlSerializer serializer = new XmlSerializer(typeof(Packet));
-                        t = (Packet)serializer.Deserialize(stream);
+                    XmlSerializer serializer = new XmlSerializer(typeof(Packet));
 
-                        Debug.Log("Packet deserialized successfully from client: Player ID - " + t.playerID);
-                    }
+                    MemoryStream stream = new MemoryStream();
+                    stream.Write(data, 0, recv);
+                    stream.Seek(0, SeekOrigin.Begin);
+                    t = (Packet)serializer.Deserialize(stream);
+
                     receivedPackets.Enqueue(t);
                 }
             }
@@ -115,6 +117,7 @@ public class Client : MonoBehaviour
                 // Update existing player's position and rotation
                 player.transform.position = packet.playerPosition;
                 player.transform.rotation = packet.playerRotation;
+
                 // Update cannon rotation if needed
                 playerExists = true;
                 break;

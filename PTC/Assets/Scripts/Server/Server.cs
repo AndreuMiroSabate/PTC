@@ -21,11 +21,12 @@ public class Server : MonoBehaviour
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         socket.Bind(ipep);
 
-        //TO DO 3
-        //Our client is sending a handshake, the server has to be able to recieve it
-        //It's time to call the Receive thread
         Thread newConnection = new Thread(Receive);
         newConnection.Start();
+
+        //
+        DontDestroyOnLoad(gameObject);
+
         Debug.Log(serverText);
     }
 
@@ -51,16 +52,17 @@ public class Server : MonoBehaviour
                 {
                     Debug.Log("Received data from client");
 
-                    using (MemoryStream stream = new MemoryStream(data))
-                    {
-                        XmlSerializer serializer = new XmlSerializer(typeof(Packet));
-                        t = (Packet)serializer.Deserialize(stream);
+                    XmlSerializer serializer = new XmlSerializer(typeof(Packet));
 
-                        Debug.Log("Packet deserialized successfully from client: Player ID - " + t.playerID);
+                    MemoryStream stream = new MemoryStream();
+                    stream.Write(data, 0, recv);
+                    stream.Seek(0, SeekOrigin.Begin);
+                    t = (Packet)serializer.Deserialize(stream);
 
-                        Thread sendPing = new Thread(() => Send(t, Remote));
-                        sendPing.Start();
-                    }
+                    Debug.Log("Packet deserialized successfully from client: Player ID - " + t.playerID);
+
+                    Thread sendPing = new Thread(() => Send(t, Remote));
+                    sendPing.Start();
                 }
             }
             catch (Exception e)
@@ -78,10 +80,13 @@ public class Server : MonoBehaviour
         t.playerCanonRotation = paquete.playerCanonRotation;
         t.playerID = paquete.playerID;
         t.playerName = paquete.playerName;
+
         XmlSerializer serializer = new XmlSerializer(typeof(Packet));
         MemoryStream stream = new MemoryStream();
+
         serializer.Serialize(stream, t);
         byte[] sendBytes = stream.ToArray();
+
         socket.SendTo(sendBytes, Remote);
     }
 }
