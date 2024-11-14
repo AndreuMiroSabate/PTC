@@ -7,11 +7,13 @@ using TMPro;
 using System.IO;
 using System.Xml.Serialization;
 using System;
+using System.Collections.Generic;
 
 public class Server : MonoBehaviour
 {
     Socket socket;
     string serverText;
+    List<EndPoint> endPoints = new List<EndPoint>();
 
     public void startServer()
     {
@@ -42,6 +44,9 @@ public class Server : MonoBehaviour
         IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
         EndPoint Remote = (EndPoint)(sender);
 
+        if (!endPoints.Contains(Remote))
+            endPoints.Add(Remote);
+
         while (true)
         {
             try
@@ -61,8 +66,11 @@ public class Server : MonoBehaviour
 
                     Debug.Log("Packet deserialized successfully from client: Player ID - " + t.playerID);
 
-                    Thread sendPing = new Thread(() => Send(t, Remote));
-                    sendPing.Start();
+                    foreach (var item in endPoints)
+                    {
+                        Thread sendPing = new Thread(() => Send(t, item));
+                        sendPing.Start();
+                    }
                 }
             }
             catch (Exception e)
@@ -72,7 +80,7 @@ public class Server : MonoBehaviour
         }
     }
 
-    void Send(Packet paquete ,EndPoint Remote)
+    void Send(Packet paquete, EndPoint Remote)
     {
         var t = new Packet();
         t.playerPosition = paquete.playerPosition;
