@@ -1,23 +1,26 @@
-using System;
-using System.Collections;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
-using System.Xml.Serialization;
+using System.Text;
 using UnityEngine;
-
+using System.Threading;
+using TMPro;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System;
+using System.Xml.Serialization;
+using System.IO;
 
 public class Client : MonoBehaviour
 {
     Socket socket;
-    IPEndPoint ipep;
+    string clientText;
+    string playerID;
 
     [Header("PLAYER PREFAB")]
     public GameObject tankPref;
 
+    // Stores references to all players in the lobby/scene
     List<PlayerScript> currentLobbyPlayers = new List<PlayerScript>();
 
     // Thread-safe queue for incoming packets
@@ -26,80 +29,83 @@ public class Client : MonoBehaviour
     // Flag to indicate if the client is disposed
     private bool isDisposed = false;
 
-
     public void StartClient()
     {
-        ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9050);
-        socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        playerID = Guid.NewGuid().ToString();
 
-        //playerID = Guid.NewGuid().ToString();
-
-        Packet packet = new Packet();
-        //packet.playerID = playerID;
-        packet.playerName = "jiji";
-        packet.playerPosition = new Vector3(0, 5, 0);
-
-        //No se destruya 
-        DontDestroyOnLoad(gameObject);
-        
-        //Send(packet);
-        Thread mainThread = new Thread(() => Send(packet));
+        Packet initial = new Packet();
+        initial.playerID = playerID;
+        initial.playerName = "jiji";
+        initial.playerPosition = new Vector3(0, 5, 0);
+        Thread mainThread = new Thread(() => Send(initial));
         mainThread.Start();
-    }
-
-    private void Send(Packet packet)
-    {
-        ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9050);
-        XmlSerializer serializer = new XmlSerializer(typeof(Packet));
-        MemoryStream stream = new MemoryStream();
-        serializer.Serialize(stream, packet);
-        byte[] sendBytes = stream.ToArray();
-        socket.SendTo(sendBytes,ipep);
-    }
-
-    private void Receive()
-    {
-        if (isDisposed) return; // Stop execution if the client is disposed
-
-        byte[] data = new byte[1500];
-        EndPoint Remote = (EndPoint)(ipep);
-
-        try
-        { 
-            int receivedData = socket.ReceiveFrom(data, ref Remote);
-
-                Debug.Log("Received data from server");
-
-                Packet packet = new Packet();
-                using (MemoryStream stream = new MemoryStream(receivedData))
-                {
-                    XmlSerializer serializer = new XmlSerializer(typeof(Packet));
-                    packet = (Packet)serializer.Deserialize(stream);
-                    Debug.Log("Deserialized packet successfully: Player ID - " + packet.playerID);
-                }
-
-                // Enqueue the packet for processing on the main thread
-                receivedPackets.Enqueue(packet);
-        }
-        catch (ObjectDisposedException)
-        {
-            Debug.LogWarning("UdpClient is disposed, stopping Receive.");
-            return;
-        }
-        catch (Exception e)
-        {
-            Debug.LogError("Error in receiving data: " + e.Message);
-        }
+        Debug.Log("Client Started");
     }
 
     void Update()
     {
-        // Process all received packets in the queue
         while (receivedPackets.TryDequeue(out Packet packet))
         {
             ProcessPacket(packet);
         }
     }
+
+    void Send(Packet packet)
+    {
+        IPEndPoint ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9050);
+
+        socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
+        XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+        MemoryStream stream = new MemoryStream();
+        serializer.Serialize(stream, packet);
+        byte[] sendBytes = stream.ToArray();
+        socket.SendTo(sendBytes, ipep);
+
+        Thread receive = new Thread(Receive);
+        receive.Start();
+    }
+
+    void Receive()
+    {
+        int recv;
+        byte[] data = new byte[1024];
+        Packet t = new Packet();
+
+        IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+        EndPoint Remote = (EndPoint)(sender);
+
+        while (true)
+        {
+            try
+            {
+                recv = socket.ReceiveFrom(data, ref Remote);
+
+                if (data.Length > 0)
+                {
+                    Debug.Log("Received data from client");
+
+                    using (MemoryStream stream = new MemoryStream(data))
+                    {
+                        XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+                        t = (Packet)serializer.Deserialize(stream);
+
+                        Debug.Log("Packet deserialized successfully from client: Player ID - " + t.playerID);
+
+                    }
+                    receivedPackets.Enqueue(t);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Error in receiving data: " + e.Message);
+            }
+
+            Thread sendPing = new Thread(() => Send(t));
+            sendPing.Start();
+        }
+    }
+
     private void ProcessPacket(Packet packet)
     {
         // Check if the player already exists
@@ -145,14 +151,5 @@ public class Client : MonoBehaviour
             Debug.LogError("Failed to get PlayerScript component from instantiated object.");
         }
     }
-    // Safely close the UDP client on application exit
-    void OnApplicationQuit()
-    {
-        isDisposed = true;
-        if (socket != null)
-        {
-            socket.Close();
-            socket.Dispose();
-        }
-    }
+
 }

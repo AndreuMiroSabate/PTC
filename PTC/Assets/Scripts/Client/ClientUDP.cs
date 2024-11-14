@@ -84,6 +84,7 @@ public class ClientUDP : MonoBehaviour
         //serializer.Serialize(stream, packet);
         //byte[] sendBytes = stream.ToArray();
         //udpClient.Send(sendBytes, sendBytes.Length, ipep);
+
         udpClient.BeginReceive(Receive, udpClient);
         Send(packet);
 

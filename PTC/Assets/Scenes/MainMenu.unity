@@ -2348,7 +2348,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4ab882514b119f4b8a0018f5cc95087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tankPref: {fileID: 0}
 --- !u!1 &1095729816
 GameObject:
   m_ObjectHideFlags: 0
@@ -3900,9 +3899,9 @@ MonoBehaviour:
           m_StringArgument: TestScene
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1047912871}
-        m_TargetAssemblyTypeName: ClientUDP, Assembly-CSharp
-        m_MethodName: StartUDPClient
+      - m_Target: {fileID: 1047912873}
+        m_TargetAssemblyTypeName: Client, Assembly-CSharp
+        m_MethodName: StartClient
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4300,10 +4299,10 @@ MonoBehaviour:
           m_StringArgument: TestScene
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1903036503}
-        m_TargetAssemblyTypeName: ServerUDP, Assembly-CSharp
+      - m_Target: {fileID: 1903036505}
+        m_TargetAssemblyTypeName: Server, Assembly-CSharp
         m_MethodName: startServer
-        m_Mode: 3
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
