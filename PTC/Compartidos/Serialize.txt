@@ -1,0 +1,21 @@
+void serializeXML()
+ {
+ var t = new testClass();
+ t.hp=40;
+ t.pos=new List<int>{10,3,12};
+ XmlSerializer serializer = new XmlSerializer(typeof(testClass));
+ stream=new MemoryStream();
+ serializer.Serialize(stream, t);
+ bytes=stream.ToArray();
+ }
+
+void deserializeXML()
+ {
+ XmlSerializer serializer = new XmlSerializer(typeof(testClass));
+ var t = new testClass();
+ stream = new MemoryStream();
+ stream.Write(bytes, 0 , bytes.Length);
+ stream.Seek(0,SeekOrigin.Begin);
+ t = (testClass) serializer.Deserialize(stream);
+ Debug.Log("Xml " + t.hp.ToString() + " " + t.pos.ToString());
+ }
