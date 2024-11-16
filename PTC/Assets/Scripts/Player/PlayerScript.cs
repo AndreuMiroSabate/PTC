@@ -8,6 +8,10 @@ public class PlayerScript : MonoBehaviour
     public Transform playerTrans;
     public float speed = 17;
 
+    [Space]
+    [SerializeField] Transform canonTransform;
+    [SerializeField] LayerMask floorLayer;
+
     public delegate void UpdatePackages(Packet package);
 
     public UpdatePackages playerUpdate;
@@ -20,11 +24,7 @@ public class PlayerScript : MonoBehaviour
     [HideInInspector]
     public string playerName;
 
-    Vector3 rotationRight = new Vector3(0, 60, 0);
-    Vector3 rotationLeft = new Vector3(0, -60, 0);
-
-    Vector3 forward = new Vector3(1, 0, 0);
-    Vector3 backward = new Vector3(-1, 0, 0);
+    float rotation = 60f;
 
     private void Start()
     {
@@ -33,31 +33,60 @@ public class PlayerScript : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (Input.GetKey("w")) //Vertical (tienen valores entre 1, -1)
+        // Canon behaviour
+        AimCannonAtMouse();
+
+        // Get the input from the Horizontal and Vertical axes
+        float verticalInput = Input.GetAxis("Vertical");   // Forward/Backward (-1 to 1)
+        float horizontalInput = Input.GetAxis("Horizontal"); // Left/Right (-1 to 1)
+
+        // Move the player based on vertical input
+        if (Mathf.Abs(verticalInput) > 0.01f) // Add a small threshold to avoid unnecessary updates
         {
-            transform.Translate(forward * speed * Time.deltaTime);
-            updatePacket();
-        }
-        if (Input.GetKey("s")) //Quitar
-        {
-            transform.Translate(backward * speed * Time.deltaTime);
+            Vector3 movement = transform.right * verticalInput * speed * Time.deltaTime;
+            transform.Translate(movement, Space.World);
             updatePacket();
         }
 
-        if (Input.GetKey("d")) //Horizontal (tienen valores entre 1, -1)
+        // Rotate the player based on horizontal input
+        if (Mathf.Abs(horizontalInput) > 0.01f)
         {
-            Quaternion deltaRotationRight = Quaternion.Euler(rotationRight * Time.deltaTime);
-            playerRb.MoveRotation(playerRb.rotation * deltaRotationRight);
-            updatePacket();
-        }
-
-        if (Input.GetKey("a")) //Quitar
-        {
-            Quaternion deltaRotationLeft = Quaternion.Euler(rotationLeft * Time.deltaTime);
-            playerRb.MoveRotation(playerRb.rotation * deltaRotationLeft);
+            Quaternion deltaRotation = Quaternion.Euler(Vector3.up * horizontalInput * rotation * Time.deltaTime);
+            transform.rotation *= deltaRotation;
             updatePacket();
         }
     }
+
+    void AimCannonAtMouse()
+    {
+        // Get the mouse position in screen space
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        // Perform the raycast
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, floorLayer))
+        {
+            // Get the point where the raycast hits the floor
+            Vector3 targetPoint = hit.point;
+            targetPoint.y = canonTransform.position.y;
+
+            // Calculate the direction from the cannon to the target point
+            Vector3 direction = (targetPoint - canonTransform.position).normalized;
+
+            // Calculate the angle between the target direction and the global right vector
+            float angle = Vector3.SignedAngle(Vector3.right, direction, Vector3.up);
+
+            // Apply rotation to the canon
+            canonTransform.localRotation = Quaternion.Euler(-angle, 0, 0);
+
+            Debug.DrawLine(canonTransform.position, targetPoint, Color.red, 0.1f);
+        }
+    }
+
+    //Funcion para lanzar un proyectil
+
+    //Funcion para recibir daño
+
+    //Función para actualizar valores
 
     void updatePacket()
     {

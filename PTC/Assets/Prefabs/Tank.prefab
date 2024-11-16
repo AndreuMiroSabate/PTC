@@ -91,6 +91,10 @@ MonoBehaviour:
   playerRb: {fileID: 1772738485250545221}
   playerTrans: {fileID: 3892948207647663531}
   speed: 4
+  canonTransform: {fileID: 7037554799864000981}
+  floorLayer:
+    serializedVersion: 2
+    m_Bits: 8
   playerID: 
   playerName: 
 --- !u!54 &1772738485250545221
@@ -141,3 +145,8 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.5, y: 2, z: 2.5}
   m_Center: {x: 0, y: 0.92, z: 0}
+--- !u!4 &7037554799864000981 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5775396430790620053, guid: 34d48dd58d0d3aa48961e084d649f448, type: 3}
+  m_PrefabInstance: {fileID: 3570297571495133760}
+  m_PrefabAsset: {fileID: 0}
