@@ -26,13 +26,6 @@ public class PlayerScript : MonoBehaviour
     Vector3 forward = new Vector3(1, 0, 0);
     Vector3 backward = new Vector3(-1, 0, 0);
 
-    private void Start()
-    {
-        playerPacket = new Packet();
-        playerPacket.playerPosition = transform.position;
-        playerPacket.playerRotation = transform.rotation;
-    }
-
     private void Update()
     {
         playerUpdate?.Invoke(playerPacket);
@@ -62,9 +55,13 @@ public class PlayerScript : MonoBehaviour
         }
 
     }
+
     public void SetInitialValues(string PlayerID, string PlayerName)
     {
+        playerPacket = new Packet();
         playerPacket.playerID = playerID = PlayerID;
+        playerPacket.playerPosition = transform.position;
+        playerPacket.playerRotation = transform.rotation;
         playerPacket.playerName = playerName = PlayerName;
     }
 }

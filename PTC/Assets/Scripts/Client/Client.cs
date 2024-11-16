@@ -59,7 +59,7 @@ public class Client : MonoBehaviour
 
     void Send(Packet packet)
     {
-        IPEndPoint ipep = new IPEndPoint(IPAddress.Parse("10.0.53.21"), 9050);
+        IPEndPoint ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9050);
 
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
@@ -108,32 +108,43 @@ public class Client : MonoBehaviour
 
     private void ProcessPacket(Packet packet)
     {
-        // Check if the player already exists
-        bool playerExists = false;
+        PlayerScript player = null;
+        if(isPlayerInGame(packet, out player))
+        { 
+            // Update existing player's position and rotation
+            player.transform.position = packet.playerPosition;
+            player.transform.rotation = packet.playerRotation;
+
+            return;
+        }
+
+        // If player does not exist, instantiate a new player
+        StartCoroutine(InstancePlayer(packet));
+    }
+
+    private bool isPlayerInGame(Packet packet, out PlayerScript myPlayer)
+    {
         foreach (var player in currentLobbyPlayers)
         {
             if (packet.playerID.Equals(player.playerID))
             {
-                // Update existing player's position and rotation
-                player.transform.position = packet.playerPosition;
-                player.transform.rotation = packet.playerRotation;
-
-                // Update cannon rotation if needed
-                playerExists = true;
-                break;
+                myPlayer = player;
+                return true;
             }
         }
 
-        // If player does not exist, instantiate a new player
-        if (!playerExists)
-        {
-            StartCoroutine(InstancePlayer(packet));
-        }
+        myPlayer = null;
+        return false;
     }
 
     IEnumerator InstancePlayer(Packet packet)
     {
         yield return new WaitForSeconds(1);
+
+        PlayerScript player = null;
+        if (isPlayerInGame(packet, out player))
+            yield break;
+
         Debug.Log("Instantiating new player...");
         GameObject instantiatedObj = Instantiate(tankPref, packet.playerPosition, packet.playerRotation);
         PlayerScript playerScript = instantiatedObj.GetComponent<PlayerScript>();

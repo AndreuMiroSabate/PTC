@@ -41,9 +41,10 @@ public class Server : MonoBehaviour
         serverText = "\n" + "Waiting for new Client...";
         Debug.Log(serverText);
 
-        IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+        IPEndPoint sender = new IPEndPoint(IPAddress.Any, 9050);
         EndPoint Remote = (EndPoint)(sender);
 
+        recv = socket.ReceiveFrom(data, ref Remote);
         if (!endPoints.Contains(Remote))
             endPoints.Add(Remote);
 
@@ -51,8 +52,6 @@ public class Server : MonoBehaviour
         {
             try
             {
-                recv = socket.ReceiveFrom(data, ref Remote);
-
                 if (data.Length > 0)
                 {
                     Debug.Log("Received data from client");
@@ -60,15 +59,15 @@ public class Server : MonoBehaviour
                     XmlSerializer serializer = new XmlSerializer(typeof(Packet));
 
                     MemoryStream stream = new MemoryStream();
-                    stream.Write(data, 0, recv);
+                    stream.Write(data, 0, data.Length);
                     stream.Seek(0, SeekOrigin.Begin);
                     t = (Packet)serializer.Deserialize(stream);
 
                     Debug.Log("Packet deserialized successfully from client: Player ID - " + t.playerID);
-
-                    foreach (var item in endPoints)
+                    
+                    foreach (var ipep in endPoints)
                     {
-                        Thread sendPing = new Thread(() => Send(t, item));
+                        Thread sendPing = new Thread(() => Send(t, ipep));
                         sendPing.Start();
                     }
                 }
@@ -82,17 +81,10 @@ public class Server : MonoBehaviour
 
     void Send(Packet paquete, EndPoint Remote)
     {
-        var t = new Packet();
-        t.playerPosition = paquete.playerPosition;
-        t.playerRotation = paquete.playerRotation;
-        t.playerCanonRotation = paquete.playerCanonRotation;
-        t.playerID = paquete.playerID;
-        t.playerName = paquete.playerName;
-
         XmlSerializer serializer = new XmlSerializer(typeof(Packet));
         MemoryStream stream = new MemoryStream();
 
-        serializer.Serialize(stream, t);
+        serializer.Serialize(stream, paquete);
         byte[] sendBytes = stream.ToArray();
 
         socket.SendTo(sendBytes, Remote);
