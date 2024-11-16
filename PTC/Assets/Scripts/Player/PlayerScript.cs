@@ -57,7 +57,6 @@ public class PlayerScript : MonoBehaviour
             playerRb.MoveRotation(playerRb.rotation * deltaRotationLeft);
             updatePacket();
         }
-
     }
 
     void updatePacket()

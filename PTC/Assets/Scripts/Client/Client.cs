@@ -33,6 +33,7 @@ public class Client : MonoBehaviour
     private bool isDisposed = false;
 
     [Header("PLAYER PREFAB")]
+    public GameObject playerTankPref;
     public GameObject tankPref;
 
     private List<PlayerScript> currentLobbyPlayers = new List<PlayerScript>();
@@ -198,7 +199,9 @@ public class Client : MonoBehaviour
             yield break;
 
         Debug.Log("Instantiating new player...");
-        GameObject instantiatedObj = Instantiate(tankPref, packet.playerPosition, packet.playerRotation);
+        GameObject instantiatedObj = Instantiate(playerID == packet.playerID ? playerTankPref : tankPref, 
+                                                packet.playerPosition, packet.playerRotation);
+
         PlayerScript playerScript = instantiatedObj.GetComponent<PlayerScript>();
 
         if (playerScript != null)

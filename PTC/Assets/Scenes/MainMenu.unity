@@ -2297,7 +2297,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1047912872}
-  - component: {fileID: 1047912871}
   - component: {fileID: 1047912873}
   m_Layer: 0
   m_Name: UDP_Client
@@ -2306,21 +2305,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1047912871
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1047912870}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ded76a535ab860498072928ea7a5925, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerID: 
-  serverIP1: {fileID: 1812636392}
-  tankPref: {fileID: 4417282915845898001, guid: 968484b5a196bbd429724a68e6edf65d, type: 3}
 --- !u!4 &1047912872
 Transform:
   m_ObjectHideFlags: 0
@@ -2348,7 +2332,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4ab882514b119f4b8a0018f5cc95087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tankPref: {fileID: 4417282915845898001, guid: 968484b5a196bbd429724a68e6edf65d, type: 3}
+  playerTankPref: {fileID: 4417282915845898001, guid: 968484b5a196bbd429724a68e6edf65d, type: 3}
+  tankPref: {fileID: 4417282915845898001, guid: 0c6f402c6970b634882065ef885014f8, type: 3}
 --- !u!1 &1095729816
 GameObject:
   m_ObjectHideFlags: 0
@@ -5011,7 +4996,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1903036504}
-  - component: {fileID: 1903036503}
   - component: {fileID: 1903036505}
   m_Layer: 0
   m_Name: UDP_Server
@@ -5020,19 +5004,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1903036503
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1903036501}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7e8e958e30322c4c80b9006753ae2f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UItextObj: {fileID: 0}
 --- !u!4 &1903036504
 Transform:
   m_ObjectHideFlags: 0
