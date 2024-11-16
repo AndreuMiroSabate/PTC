@@ -4290,7 +4290,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1903036505}
         m_TargetAssemblyTypeName: Server, Assembly-CSharp
-        m_MethodName: startServer
+        m_MethodName: StartServer
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

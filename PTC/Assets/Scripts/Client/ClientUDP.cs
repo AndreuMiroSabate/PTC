@@ -16,21 +16,6 @@ public enum Message
     SERVER
 }
 
-[System.Serializable]
-public struct Packet
-{
-    public Vector3 playerPosition;
-    public Quaternion playerRotation;
-    public Quaternion playerCanonRotation;
-
-    // Player health
-    public float life;
-    // Player ID
-    public string playerID;
-    // Player name
-    public string playerName;
-}
-
 public class ClientUDP : MonoBehaviour
 {
     UdpClient udpClient;

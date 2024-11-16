@@ -11,114 +11,167 @@ using System;
 using System.Xml.Serialization;
 using System.IO;
 
+[System.Serializable]
+public struct Packet
+{
+    public Vector3 playerPosition;
+    public Quaternion playerRotation;
+    public Quaternion playerCanonRotation;
+
+    // Player health
+    public float life;
+    // Player ID
+    public string playerID;
+    // Player name
+    public string playerName;
+}
+
 public class Client : MonoBehaviour
 {
-    Socket socket;
-    string playerID;
+    private Socket socket;
+    private string playerID;
+    private bool isDisposed = false;
 
     [Header("PLAYER PREFAB")]
     public GameObject tankPref;
 
-    // Stores references to all players in the lobby/scene
-    List<PlayerScript> currentLobbyPlayers = new List<PlayerScript>();
-
-    // Thread-safe queue for incoming packets
+    private List<PlayerScript> currentLobbyPlayers = new List<PlayerScript>();
     private ConcurrentQueue<Packet> receivedPackets = new ConcurrentQueue<Packet>();
 
-    // Flag to indicate if the client is disposed
-    private bool isDisposed = false;
+    private Thread receiveThread;
 
     public void StartClient()
     {
         playerID = Guid.NewGuid().ToString();
 
-        Packet initial = new Packet();
-        initial.playerID = playerID;
-        initial.playerName = "jiji";
-        initial.playerPosition = new Vector3(0, 5, 0);
+        // Initialize socket
+        IPEndPoint ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9050);
+        socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
-        Thread mainThread = new Thread(() => Send(initial));
-        mainThread.Start();
+        // Send initial packet
+        Packet initialPacket = new Packet
+        {
+            playerID = playerID,
+            playerName = "Player_" + UnityEngine.Random.Range(1, 1000),
+            playerPosition = new Vector3(0, 5, 0)
+        };
+        Send(initialPacket);
 
-        Thread receive = new Thread(Receive);
-        receive.Start();
+        // Start receiving thread
+        receiveThread = new Thread(Receive);
+        receiveThread.IsBackground = true;
+        receiveThread.Start();
 
-        //
         DontDestroyOnLoad(gameObject);
-
-        Debug.Log("Client Started");
+        Debug.Log("Client Started with Player ID: " + playerID);
     }
 
-    void Update()
+    private void Update()
     {
+        // Process received packets
         while (receivedPackets.TryDequeue(out Packet packet))
         {
             ProcessPacket(packet);
         }
     }
 
-    void Send(Packet packet)
+    private void OnApplicationQuit()
     {
-        IPEndPoint ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9050);
-
-        socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-
-        XmlSerializer serializer = new XmlSerializer(typeof(Packet));
-        MemoryStream stream = new MemoryStream();
-        serializer.Serialize(stream, packet);
-        byte[] sendBytes = stream.ToArray();
-        socket.SendTo(sendBytes, ipep);
+        DisposeClient();
     }
 
-    void Receive()
+    private void DisposeClient()
     {
-        int recv;
-        byte[] data = new byte[1024];
-        Packet t = new Packet();
+        if (isDisposed) return;
 
-        IPEndPoint sender = new IPEndPoint(IPAddress.Any, 9050);
-        EndPoint Remote = (EndPoint)(sender);
+        isDisposed = true;
+        Debug.Log("Disposing client...");
 
-        while (true)
+        try
+        {
+            if (socket != null)
+            {
+                socket.Close();
+                socket = null;
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Error while closing socket: " + e.Message);
+        }
+
+        if (receiveThread != null && receiveThread.IsAlive)
+        {
+            receiveThread.Abort();
+        }
+    }
+
+    private void Send(Packet packet)
+    {
+        try
+        {
+            IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9050);
+
+            XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+            using (MemoryStream stream = new MemoryStream())
+            {
+                serializer.Serialize(stream, packet);
+                byte[] sendBytes = stream.ToArray();
+                socket.SendTo(sendBytes, serverEndpoint);
+            }
+
+            Debug.Log("Sent packet to server: Player ID - " + packet.playerID);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Error in sending data: " + e.Message);
+        }
+    }
+
+    private void Receive()
+    {
+        byte[] buffer = new byte[1024];
+
+        while (!isDisposed)
         {
             try
             {
-                recv = socket.ReceiveFrom(data, ref Remote);
+                EndPoint remoteEndpoint = new IPEndPoint(IPAddress.Any, 0);
+                int receivedBytes = socket.ReceiveFrom(buffer, ref remoteEndpoint);
 
-                if (recv > 0)
+                if (receivedBytes > 0)
                 {
-                    Debug.Log("Received data from Server");
-
-                    XmlSerializer serializer = new XmlSerializer(typeof(Packet));
-
-                    MemoryStream stream = new MemoryStream();
-                    stream.Write(data, 0, recv);
-                    stream.Seek(0, SeekOrigin.Begin);
-                    t = (Packet)serializer.Deserialize(stream);
-
-                    receivedPackets.Enqueue(t);
+                    using (MemoryStream stream = new MemoryStream(buffer, 0, receivedBytes))
+                    {
+                        XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+                        Packet receivedPacket = (Packet)serializer.Deserialize(stream);
+                        receivedPackets.Enqueue(receivedPacket);
+                        Debug.Log("Received packet from server: Player ID - " + receivedPacket.playerID);
+                    }
                 }
             }
             catch (Exception e)
             {
-                Debug.LogError("Error in receiving data: " + e.Message);
+                if (!isDisposed) // Suppress errors after disposal
+                {
+                    Debug.LogError("Error in receiving data: " + e.Message);
+                }
             }
         }
     }
 
     private void ProcessPacket(Packet packet)
     {
-        PlayerScript player = null;
-        if(isPlayerInGame(packet, out player))
-        { 
+        // Check if the player already exists
+        if (isPlayerInGame(packet, out PlayerScript existingPlayer))
+        {
             // Update existing player's position and rotation
-            player.transform.position = packet.playerPosition;
-            player.transform.rotation = packet.playerRotation;
-
+            existingPlayer.transform.position = packet.playerPosition;
+            existingPlayer.transform.rotation = packet.playerRotation;
             return;
         }
 
-        // If player does not exist, instantiate a new player
+        // Instantiate new player
         StartCoroutine(InstancePlayer(packet));
     }
 
@@ -137,30 +190,27 @@ public class Client : MonoBehaviour
         return false;
     }
 
-    IEnumerator InstancePlayer(Packet packet)
+    private IEnumerator InstancePlayer(Packet packet)
     {
-        yield return new WaitForSeconds(1);
+        yield return null; // Wait until the next frame to instantiate
 
-        PlayerScript player = null;
-        if (isPlayerInGame(packet, out player))
+        if (isPlayerInGame(packet, out PlayerScript existingPlayer))
             yield break;
 
         Debug.Log("Instantiating new player...");
         GameObject instantiatedObj = Instantiate(tankPref, packet.playerPosition, packet.playerRotation);
         PlayerScript playerScript = instantiatedObj.GetComponent<PlayerScript>();
+
         if (playerScript != null)
         {
-            // Add the player to the lobby list and set attributes
             currentLobbyPlayers.Add(playerScript);
             playerScript.SetInitialValues(packet.playerID, packet.playerName);
             playerScript.playerUpdate += Send;
             Debug.Log("Player instantiated and added to lobby: " + playerScript.playerID);
-
         }
         else
         {
             Debug.LogError("Failed to get PlayerScript component from instantiated object.");
         }
     }
-
 }

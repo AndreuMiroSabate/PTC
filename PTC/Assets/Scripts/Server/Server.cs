@@ -3,7 +3,6 @@ using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
 using System.Threading;
-using TMPro;
 using System.IO;
 using System.Xml.Serialization;
 using System;
@@ -11,11 +10,12 @@ using System.Collections.Generic;
 
 public class Server : MonoBehaviour
 {
-    Socket socket;
-    string serverText;
-    List<EndPoint> endPoints = new List<EndPoint>();
+    private Socket socket;
+    private string serverText;
+    private readonly List<EndPoint> endPoints = new List<EndPoint>();
+    private readonly object lockObject = new object();
 
-    public void startServer()
+    public void StartServer()
     {
         serverText = "Starting UDP Server...";
 
@@ -23,54 +23,50 @@ public class Server : MonoBehaviour
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         socket.Bind(ipep);
 
-        Thread newConnection = new Thread(Receive);
-        newConnection.Start();
+        Thread receiveThread = new Thread(Receive);
+        receiveThread.IsBackground = true;
+        receiveThread.Start();
 
-        //
         DontDestroyOnLoad(gameObject);
 
         Debug.Log(serverText);
     }
 
-    void Receive()
+    private void Receive()
     {
-        int recv;
         byte[] data = new byte[1024];
-        Packet t = new Packet();
+        Packet receivedPacket;
 
-        serverText = "\n" + "Waiting for new Client...";
-        Debug.Log(serverText);
-
-        IPEndPoint sender = new IPEndPoint(IPAddress.Any, 9050);
-        EndPoint Remote = (EndPoint)(sender);
-
-        recv = socket.ReceiveFrom(data, ref Remote);
-        if (!endPoints.Contains(Remote))
-            endPoints.Add(Remote);
+        Debug.Log("\nWaiting for new clients...");
 
         while (true)
         {
             try
             {
-                if (data.Length > 0)
+                EndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
+                int recv = socket.ReceiveFrom(data, ref remoteEndPoint);
+
+                // Add new clients to the list
+                lock (lockObject)
                 {
-                    Debug.Log("Received data from client");
-
-                    XmlSerializer serializer = new XmlSerializer(typeof(Packet));
-
-                    MemoryStream stream = new MemoryStream();
-                    stream.Write(data, 0, data.Length);
-                    stream.Seek(0, SeekOrigin.Begin);
-                    t = (Packet)serializer.Deserialize(stream);
-
-                    Debug.Log("Packet deserialized successfully from client: Player ID - " + t.playerID);
-                    
-                    foreach (var ipep in endPoints)
+                    if (!endPoints.Contains(remoteEndPoint))
                     {
-                        Thread sendPing = new Thread(() => Send(t, ipep));
-                        sendPing.Start();
+                        endPoints.Add(remoteEndPoint);
+                        Debug.Log("New client connected: " + remoteEndPoint);
                     }
                 }
+
+                // Deserialize received data
+                using (MemoryStream stream = new MemoryStream(data, 0, recv))
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+                    receivedPacket = (Packet)serializer.Deserialize(stream);
+                }
+
+                Debug.Log("Received packet from client: Player ID - " + receivedPacket.playerID);
+
+                // Broadcast the received packet to all connected clients
+                Broadcast(receivedPacket);
             }
             catch (Exception e)
             {
@@ -79,14 +75,33 @@ public class Server : MonoBehaviour
         }
     }
 
-    void Send(Packet paquete, EndPoint Remote)
+    private void Broadcast(Packet packet)
     {
-        XmlSerializer serializer = new XmlSerializer(typeof(Packet));
-        MemoryStream stream = new MemoryStream();
+        byte[] sendBytes;
 
-        serializer.Serialize(stream, paquete);
-        byte[] sendBytes = stream.ToArray();
+        // Serialize the packet
+        using (MemoryStream stream = new MemoryStream())
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+            serializer.Serialize(stream, packet);
+            sendBytes = stream.ToArray();
+        }
 
-        socket.SendTo(sendBytes, Remote);
+        // Send to all connected clients
+        lock (lockObject)
+        {
+            foreach (var endPoint in endPoints)
+            {
+                try
+                {
+                    socket.SendTo(sendBytes, endPoint);
+                    Debug.Log("Sent data to: " + endPoint);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("Error in sending data to " + endPoint + ": " + e.Message);
+                }
+            }
+        }
     }
 }

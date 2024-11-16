@@ -26,7 +26,7 @@ public class PlayerScript : MonoBehaviour
     Vector3 forward = new Vector3(1, 0, 0);
     Vector3 backward = new Vector3(-1, 0, 0);
 
-    private void Update()
+    private void Start()
     {
         playerUpdate?.Invoke(playerPacket);
     }
@@ -36,24 +36,36 @@ public class PlayerScript : MonoBehaviour
         if (Input.GetKey("w")) //Vertical (tienen valores entre 1, -1)
         {
             transform.Translate(forward * speed * Time.deltaTime);
+            updatePacket();
         }
         if (Input.GetKey("s")) //Quitar
         {
             transform.Translate(backward * speed * Time.deltaTime);
+            updatePacket();
         }
 
         if (Input.GetKey("d")) //Horizontal (tienen valores entre 1, -1)
         {
             Quaternion deltaRotationRight = Quaternion.Euler(rotationRight * Time.deltaTime);
             playerRb.MoveRotation(playerRb.rotation * deltaRotationRight);
+            updatePacket();
         }
 
         if (Input.GetKey("a")) //Quitar
         {
             Quaternion deltaRotationLeft = Quaternion.Euler(rotationLeft * Time.deltaTime);
             playerRb.MoveRotation(playerRb.rotation * deltaRotationLeft);
+            updatePacket();
         }
 
+    }
+
+    void updatePacket()
+    {
+        playerPacket.playerPosition = transform.position;
+        playerPacket.playerRotation = transform.rotation;
+
+        playerUpdate?.Invoke(playerPacket);
     }
 
     public void SetInitialValues(string PlayerID, string PlayerName)
