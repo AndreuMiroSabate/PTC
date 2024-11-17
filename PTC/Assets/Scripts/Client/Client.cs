@@ -51,17 +51,24 @@ public class Client : MonoBehaviour
     public GameObject playerTankPref;
     public GameObject tankPref;
 
+    [Header("SERVER IP")]
+    public TextMeshProUGUI serverIPTextMesh;
+
     private List<PlayerScript> currentLobbyPlayers = new List<PlayerScript>();
     private ConcurrentQueue<Packet> receivedPackets = new ConcurrentQueue<Packet>();
 
     private Thread receiveThread;
 
+    private string serverIP;
+
     public void StartClient()
     {
         playerID = Guid.NewGuid().ToString();
 
+        serverIP = serverIPTextMesh.text;
+
         // Initialize socket
-        IPEndPoint ipep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9050);
+        IPEndPoint ipep = new IPEndPoint(IPAddress.Parse(serverIP), 9050);
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
         // Send initial packet
@@ -126,7 +133,7 @@ public class Client : MonoBehaviour
     {
         try
         {
-            IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9050);
+            IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse(serverIP), 9050);
 
             XmlSerializer serializer = new XmlSerializer(typeof(Packet));
             using (MemoryStream stream = new MemoryStream())
