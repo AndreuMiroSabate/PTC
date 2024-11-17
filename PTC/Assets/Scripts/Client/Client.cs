@@ -12,6 +12,17 @@ using System.Xml.Serialization;
 using System.IO;
 
 [System.Serializable]
+public enum PlayerAction
+{
+    NONE,
+    GET_DAMAGE,
+    SHOOT,
+    DIE,
+
+    //TODO pick ups
+}
+
+[System.Serializable]
 public struct Packet
 {
     public Vector3 playerPosition;
@@ -24,6 +35,10 @@ public struct Packet
     public string playerID;
     // Player name
     public string playerName;
+
+    // Possible player actions
+    [XmlElement("PlayerAction")]
+    public PlayerAction playerAction;
 }
 
 public class Client : MonoBehaviour
@@ -166,9 +181,9 @@ public class Client : MonoBehaviour
         // Check if the player already exists
         if (isPlayerInGame(packet, out PlayerScript existingPlayer))
         {
-            // Update existing player's position and rotation
-            existingPlayer.transform.position = packet.playerPosition;
-            existingPlayer.transform.rotation = packet.playerRotation;
+            // Update player's values
+            existingPlayer.GetPlayerValues(packet);
+
             return;
         }
 

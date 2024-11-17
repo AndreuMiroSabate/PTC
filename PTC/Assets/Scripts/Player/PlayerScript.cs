@@ -9,14 +9,18 @@ public class PlayerScript : MonoBehaviour
     public float speed = 17;
 
     [Space]
-    [SerializeField] Transform canonTransform;
-    [SerializeField] LayerMask floorLayer;
+    public Transform canonTransform;
+    public LayerMask floorLayer;
+    [Space]
+    public Transform canonBarrelTransform;
+    public GameObject bulletPref;
 
     public delegate void UpdatePackages(Packet package);
 
     public UpdatePackages playerUpdate;
 
-    Packet playerPacket;
+    [HideInInspector]
+    public Packet playerPacket;
 
     [HideInInspector]
     public string playerID;
@@ -24,11 +28,22 @@ public class PlayerScript : MonoBehaviour
     [HideInInspector]
     public string playerName;
 
-    float rotation = 60f;
+    [HideInInspector]
+    public float rotation = 60f;
 
     private void Start()
     {
         playerUpdate?.Invoke(playerPacket);
+    }
+
+    private void Update()
+    {
+        // Shoot (Cambiar luego para que mande msg al server)
+        if (Input.GetMouseButtonUp(0))
+        {
+            playerPacket.playerAction = PlayerAction.SHOOT;
+            updatePacket();
+        }
     }
 
     void FixedUpdate()
@@ -76,24 +91,68 @@ public class PlayerScript : MonoBehaviour
             float angle = Vector3.SignedAngle(Vector3.right, direction, Vector3.up);
 
             // Apply rotation to the canon
-            canonTransform.localRotation = Quaternion.Euler(-angle, 0, 0);
+            canonTransform.rotation = Quaternion.Euler(0, angle, -90);
 
             Debug.DrawLine(canonTransform.position, targetPoint, Color.red, 0.1f);
         }
     }
 
     //Funcion para lanzar un proyectil
+    public void FireProjectile()
+    {
+        //Check cooldown
+
+        // Shoot particle and effects
+
+        // Instance bullet
+        GameObject projectile = Instantiate(bulletPref, canonBarrelTransform.position, canonBarrelTransform.rotation);
+        projectile.GetComponent<BouncingBullet>().GetAllValues(gameObject, canonBarrelTransform.forward, 1, 1);
+    }
 
     //Funcion para recibir daño
+    public void ReceiveDamage()
+    {
+    
+    }
 
     //Función para actualizar valores
+    public void GetPlayerValues(Packet playerPacket)
+    {
+        //postion
+        transform.position = playerPacket.playerPosition;
+        
+        //rotation
+        transform.rotation = playerPacket.playerRotation;
+
+        //canon rotation
+        canonTransform.rotation = playerPacket.playerCanonRotation;
+
+        //actions 
+        switch (playerPacket.playerAction)
+        {
+            case PlayerAction.GET_DAMAGE:
+                ReceiveDamage();
+                break;
+            case PlayerAction.SHOOT:
+                FireProjectile();
+                break;
+            case PlayerAction.DIE:
+                //TODO
+                break;
+        }
+
+    }
 
     void updatePacket()
     {
         playerPacket.playerPosition = transform.position;
         playerPacket.playerRotation = transform.rotation;
+        playerPacket.playerCanonRotation = canonTransform.rotation;
 
         playerUpdate?.Invoke(playerPacket);
+
+        //Reinicia la accion
+        playerPacket.playerAction = PlayerAction.NONE;
     }
 
     public void SetInitialValues(string PlayerID, string PlayerName)

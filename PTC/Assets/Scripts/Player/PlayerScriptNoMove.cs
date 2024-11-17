@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class PlayerScriptNoMove : PlayerScript
 {
-    // Update is called once per frame
+    private void Update()
+    {
+        
+    }
+
     void FixedUpdate()
     {
         
