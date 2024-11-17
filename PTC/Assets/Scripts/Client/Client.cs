@@ -51,8 +51,9 @@ public class Client : MonoBehaviour
     public GameObject playerTankPref;
     public GameObject tankPref;
 
-    [Header("SERVER IP")]
-    public TextMeshProUGUI serverIPTextMesh;
+    [Header("INPUT FIELDS")]
+    public TMP_InputField serverIPTextMesh;
+    public TMP_InputField playerNameTextMesh;
 
     private List<PlayerScript> currentLobbyPlayers = new List<PlayerScript>();
     private ConcurrentQueue<Packet> receivedPackets = new ConcurrentQueue<Packet>();
@@ -64,8 +65,7 @@ public class Client : MonoBehaviour
     public void StartClient()
     {
         playerID = Guid.NewGuid().ToString();
-
-        serverIP = serverIPTextMesh.text;
+        serverIP = serverIPTextMesh.text.Trim();
 
         // Initialize socket
         IPEndPoint ipep = new IPEndPoint(IPAddress.Parse(serverIP), 9050);
@@ -75,7 +75,7 @@ public class Client : MonoBehaviour
         Packet initialPacket = new Packet
         {
             playerID = playerID,
-            playerName = "Player_" + UnityEngine.Random.Range(1, 1000),
+            playerName = playerNameTextMesh.text,
             playerPosition = new Vector3(0, 5, 0)
         };
         Send(initialPacket);

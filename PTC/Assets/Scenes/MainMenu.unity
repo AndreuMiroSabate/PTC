@@ -1741,7 +1741,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerTankPref: {fileID: 4417282915845898001, guid: 968484b5a196bbd429724a68e6edf65d, type: 3}
   tankPref: {fileID: 4417282915845898001, guid: 0c6f402c6970b634882065ef885014f8, type: 3}
-  serverIPTextMesh: {fileID: 1812636392}
+  serverIPTextMesh: {fileID: 2138456808}
+  playerNameTextMesh: {fileID: 2032048947}
 --- !u!1 &1106579508
 GameObject:
   m_ObjectHideFlags: 0
@@ -2732,7 +2733,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1739393729
 RectTransform:
   m_ObjectHideFlags: 0

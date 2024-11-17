@@ -4,8 +4,5 @@ using UnityEngine;
 
 public class Join_to_Match : MonoBehaviour
 {
-    void CreateTank()
-    {
-        
-    }
+
 }
