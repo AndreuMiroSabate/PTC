@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class PlayerScript : MonoBehaviour
     [Space]
     public Transform canonBarrelTransform;
     public GameObject bulletPref;
+    [Space]
+    public TextMeshPro playerNameTXT;
 
     public delegate void UpdatePackages(Packet package);
 
@@ -161,6 +164,6 @@ public class PlayerScript : MonoBehaviour
         playerPacket.playerID = playerID = PlayerID;
         playerPacket.playerPosition = transform.position;
         playerPacket.playerRotation = transform.rotation;
-        playerPacket.playerName = playerName = PlayerName;
+        playerPacket.playerName = playerName = playerNameTXT.text = PlayerName;
     }
 }
