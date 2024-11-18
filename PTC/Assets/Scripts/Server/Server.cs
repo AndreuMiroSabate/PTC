@@ -39,8 +39,6 @@ public class Server : MonoBehaviour
         byte[] data = new byte[1024];
         Packet receivedPacket;
 
-        string objSpawnPos = "";
-
         Debug.Log("\nWaiting for new clients...");
 
         while (true)
@@ -64,9 +62,8 @@ public class Server : MonoBehaviour
                     {
                         endPoints.Add(remoteEndPoint);
                         Debug.Log("New client connected: " + remoteEndPoint);
-                        objSpawnPos = "Player_" + endPoints.Count.ToString() + "_SpawnPoint";
 
-                        receivedPacket.playerPosition = GameObject.Find(objSpawnPos).transform.position;
+                        receivedPacket = SpawnPointPositionForPlayer(receivedPacket);
                     }
                 }
 
@@ -80,6 +77,13 @@ public class Server : MonoBehaviour
                 Debug.LogError("Error in receiving data: " + e.Message);
             }
         }
+    }
+
+    private Packet SpawnPointPositionForPlayer(Packet packet)
+    {
+        string objSpawnPos = "Player_" + endPoints.Count.ToString() + "_SpawnPoint";
+        packet.playerPosition = GameObject.Find(objSpawnPos).transform.position;
+        return packet;
     }
 
     private void Broadcast(Packet packet)
