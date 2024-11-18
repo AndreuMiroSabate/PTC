@@ -10,38 +10,7 @@ using System.Xml.Serialization;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 
-[System.Serializable]
-public enum PlayerAction
-{
-    NONE,
-    START_GAME,
-    GET_DAMAGE,
-    SHOOT,
-    DIE,
-
-    //TODO pick ups
-}
-
-[System.Serializable]
-public struct Packet
-{
-    public Vector3 playerPosition;
-    public Quaternion playerRotation;
-    public Quaternion playerCanonRotation;
-
-    // Player health
-    public float life;
-    // Player ID
-    public string playerID;
-    // Player name
-    public string playerName;
-
-    // Possible player actions
-    [XmlElement("PlayerAction")]
-    public PlayerAction playerAction;
-}
-
-public class Client : MonoBehaviour
+public class Client_Host : MonoBehaviour
 {
     private Socket socket;
     private string playerID;
@@ -51,10 +20,6 @@ public class Client : MonoBehaviour
     public GameObject playerTankPref;
     public GameObject tankPref;
 
-    [Header("INPUT FIELDS")]
-    public TMP_InputField serverIPTextMesh;
-    public TMP_InputField playerNameTextMesh;
-
     private List<PlayerScript> currentLobbyPlayers = new List<PlayerScript>();
     private ConcurrentQueue<Packet> receivedPackets = new ConcurrentQueue<Packet>();
 
@@ -62,10 +27,10 @@ public class Client : MonoBehaviour
 
     private string serverIP;
 
-    public void StartClient()
+    public void StartClient(TMP_InputField playerNameTextMesh)
     {
         playerID = Guid.NewGuid().ToString();
-        serverIP = serverIPTextMesh.text.Trim();
+        serverIP = GetLocalIPAddress().Trim();
 
         // Initialize socket
         IPEndPoint ipep = new IPEndPoint(IPAddress.Parse(serverIP), 9050);
@@ -220,11 +185,8 @@ public class Client : MonoBehaviour
         if (isPlayerInGame(packet, out PlayerScript existingPlayer))
             yield break;
 
-        if (GameObject.Find("StartGameButton"))
-            GameObject.Find("StartGameButton").SetActive(false);
-
         Debug.Log("Instantiating new player...");
-        GameObject instantiatedObj = Instantiate(playerID == packet.playerID ? playerTankPref : tankPref, 
+        GameObject instantiatedObj = Instantiate(playerID == packet.playerID ? playerTankPref : tankPref,
                                                 packet.playerPosition, packet.playerRotation);
 
         PlayerScript playerScript = instantiatedObj.GetComponent<PlayerScript>();
@@ -240,5 +202,26 @@ public class Client : MonoBehaviour
         {
             Debug.LogError("Failed to get PlayerScript component from instantiated object.");
         }
+    }
+
+    string GetLocalIPAddress()
+    {
+        try
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                // Ensure the IP address is IPv4 and not a loopback address
+                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError("Error fetching local IP address: " + ex.Message);
+        }
+        return null;
     }
 }
