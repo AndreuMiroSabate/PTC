@@ -237,15 +237,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 34d48dd58d0d3aa48961e084d649f448, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7.6922684
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 34d48dd58d0d3aa48961e084d649f448, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.490032
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 34d48dd58d0d3aa48961e084d649f448, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.2559261
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 34d48dd58d0d3aa48961e084d649f448, type: 3}
       propertyPath: m_LocalRotation.w
@@ -301,7 +301,7 @@ PrefabInstance:
       addedObject: {fileID: 1772738485250545221}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 34d48dd58d0d3aa48961e084d649f448, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6736143514775140019}
+      addedObject: {fileID: 5587656494679856639}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 34d48dd58d0d3aa48961e084d649f448, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2022281943314653907}
@@ -340,6 +340,7 @@ MonoBehaviour:
     m_Bits: 8
   canonBarrelTransform: {fileID: 3448315391748883306}
   bulletPref: {fileID: 5472348247825934207, guid: f33d5e0c8aa7a714cba531c2b323cb11, type: 3}
+  smokeParticlePref: {fileID: 6739023416487370313, guid: 77a4564b6a6c33a4f82f6859f0a48d20, type: 3}
   playerNameTXT: {fileID: 7685359928222981271}
   playerPacket:
     playerPosition: {x: 0, y: 0, z: 0}
@@ -375,12 +376,12 @@ Rigidbody:
   m_ImplicitCom: 0
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &6736143514775140019
-BoxCollider:
+--- !u!135 &5587656494679856639
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -398,8 +399,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.5, y: 2, z: 2.5}
-  m_Center: {x: 0, y: 0.92, z: 0}
+  m_Radius: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!114 &2022281943314653907
 MonoBehaviour:
   m_ObjectHideFlags: 0

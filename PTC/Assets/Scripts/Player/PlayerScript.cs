@@ -15,9 +15,10 @@ public class PlayerScript : MonoBehaviour
     [Space]
     public Transform canonBarrelTransform;
     public GameObject bulletPref;
+    public GameObject smokeParticlePref;
     [Space]
     public TextMeshPro playerNameTXT;
-
+    
     public delegate void UpdatePackages(Packet package);
 
     public UpdatePackages playerUpdate;
@@ -63,7 +64,6 @@ public class PlayerScript : MonoBehaviour
         {
             Vector3 movement = transform.right * verticalInput * speed * Time.deltaTime;
             transform.Translate(movement, Space.World);
-            updatePacket();
         }
 
         // Rotate the player based on horizontal input
@@ -71,8 +71,9 @@ public class PlayerScript : MonoBehaviour
         {
             Quaternion deltaRotation = Quaternion.Euler(Vector3.up * horizontalInput * rotation * Time.deltaTime);
             transform.rotation *= deltaRotation;
-            updatePacket();
         }
+
+        updatePacket();
     }
 
     void AimCannonAtMouse()
@@ -106,6 +107,7 @@ public class PlayerScript : MonoBehaviour
         //Check cooldown
 
         // Shoot particle and effects
+        Destroy(Instantiate(smokeParticlePref, canonBarrelTransform.position, canonBarrelTransform.rotation), .5f);
 
         // Instance bullet
         GameObject projectile = Instantiate(bulletPref, canonBarrelTransform.position, canonBarrelTransform.rotation);

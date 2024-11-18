@@ -37,6 +37,8 @@ public class Server : MonoBehaviour
         byte[] data = new byte[1024];
         Packet receivedPacket;
 
+        string objSpawnPos = "";
+
         Debug.Log("\nWaiting for new clients...");
 
         while (true)
@@ -46,6 +48,13 @@ public class Server : MonoBehaviour
                 EndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
                 int recv = socket.ReceiveFrom(data, ref remoteEndPoint);
 
+                // Deserialize received data
+                using (MemoryStream stream = new MemoryStream(data, 0, recv))
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+                    receivedPacket = (Packet)serializer.Deserialize(stream);
+                }
+
                 // Add new clients to the list
                 lock (lockObject)
                 {
@@ -53,14 +62,10 @@ public class Server : MonoBehaviour
                     {
                         endPoints.Add(remoteEndPoint);
                         Debug.Log("New client connected: " + remoteEndPoint);
-                    }
-                }
+                        objSpawnPos = "Player_" + endPoints.Count.ToString() + "_SpawnPoint";
 
-                // Deserialize received data
-                using (MemoryStream stream = new MemoryStream(data, 0, recv))
-                {
-                    XmlSerializer serializer = new XmlSerializer(typeof(Packet));
-                    receivedPacket = (Packet)serializer.Deserialize(stream);
+                        receivedPacket.playerPosition = GameObject.Find(objSpawnPos).transform.position;
+                    }
                 }
 
                 Debug.Log("Received packet from client: Player ID - " + receivedPacket.playerID);

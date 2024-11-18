@@ -9,4 +9,9 @@ public class Change_Scene : MonoBehaviour
     {
         SceneManager.LoadScene(scenename);
     }
+
+    public void DisableObject(GameObject gameObjectToDisable)
+    {
+        gameObjectToDisable.SetActive(false);
+    }
 }
