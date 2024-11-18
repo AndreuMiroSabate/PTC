@@ -53,6 +53,8 @@ public class PlayerScript : MonoBehaviour
 
     private void Update()
     {
+        if (playerState != PlayerState.PLAYING) return;
+
         // Shoot (Cambiar luego para que mande msg al server)
         if (Input.GetMouseButtonUp(0))
         {
@@ -63,6 +65,8 @@ public class PlayerScript : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (playerState != PlayerState.PLAYING) return;
+
         // Canon behaviour
         AimCannonAtMouse();
 
@@ -154,6 +158,13 @@ public class PlayerScript : MonoBehaviour
                 break;
             case PlayerAction.DIE:
                 //TODO
+                break;
+            case PlayerAction.START_GAME:
+                playerState = PlayerState.PLAYING;
+                GameObject.Find("WarningForPlayer").SetActive(false);
+
+                //TODO Play sound
+                
                 break;
         }
 

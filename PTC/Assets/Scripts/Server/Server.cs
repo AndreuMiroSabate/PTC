@@ -7,15 +7,22 @@ using System.IO;
 using System.Xml.Serialization;
 using System;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using System.Collections.Concurrent;
 
 public class Server : MonoBehaviour
 {
     private Socket socket;
     private string serverText;
     private readonly List<EndPoint> endPoints = new List<EndPoint>();
+    private List<string> playersInLobbyIDs = new List<string>();
+    private ConcurrentQueue<Packet> receivedPackets = new ConcurrentQueue<Packet>();
+
     private readonly object lockObject = new object();
 
     private bool gameStarted = false;
+    private bool newPlayerJoined = false;
+    private Button startGameButton = null;
 
     public void StartServer()
     {
@@ -32,6 +39,15 @@ public class Server : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         Debug.Log(serverText);
+    }
+
+    private void Update()
+    {
+        // Process received packets
+        while (receivedPackets.TryDequeue(out Packet packet))
+        {
+            Broadcast(packet);
+        }
     }
 
     private void Receive()
@@ -61,16 +77,15 @@ public class Server : MonoBehaviour
                     if (!endPoints.Contains(remoteEndPoint))
                     {
                         endPoints.Add(remoteEndPoint);
+                        newPlayerJoined = true;
                         Debug.Log("New client connected: " + remoteEndPoint);
-
-                        receivedPacket = SpawnPointPositionForPlayer(receivedPacket);
                     }
                 }
 
                 Debug.Log("Received packet from client: Player ID - " + receivedPacket.playerID);
 
-                // Broadcast the received packet to all connected clients
-                Broadcast(receivedPacket);
+                // Enqueue the received packet to all connected clients
+                receivedPackets.Enqueue(receivedPacket);
             }
             catch (Exception e)
             {
@@ -83,12 +98,49 @@ public class Server : MonoBehaviour
     {
         string objSpawnPos = "Player_" + endPoints.Count.ToString() + "_SpawnPoint";
         packet.playerPosition = GameObject.Find(objSpawnPos).transform.position;
+
+        if (!startGameButton)
+        {
+            GameObject.Find("WarningForPlayer").SetActive(false);
+            startGameButton = GameObject.Find("StartGameButton").GetComponent<Button>();
+            startGameButton.onClick.AddListener(StartGame);
+        }
+
+        playersInLobbyIDs.Add(packet.playerID);
         return packet;
+    }
+
+    private void StartGame()
+    {
+        startGameButton.gameObject.SetActive(false);
+        gameStarted = true;
+
+        for (int i = 0; i < playersInLobbyIDs.Count; i++)
+        {
+            int x = i + 1;
+            string objSpawnPos = "Player_" + x + "_SpawnPoint";
+
+            //Create packet
+            Packet packet = new Packet
+            {
+                playerPosition = GameObject.Find(objSpawnPos).transform.position,
+                playerAction = PlayerAction.START_GAME,
+                playerID = playersInLobbyIDs[i],
+            };
+
+            Broadcast(packet);
+        }
     }
 
     private void Broadcast(Packet packet)
     {
         byte[] sendBytes;
+
+        if (newPlayerJoined)
+        {
+            packet = SpawnPointPositionForPlayer(packet);
+            newPlayerJoined = false;
+        }
 
         // Serialize the packet
         using (MemoryStream stream = new MemoryStream())

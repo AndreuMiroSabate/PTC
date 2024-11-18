@@ -15,6 +15,7 @@ using System.IO;
 public enum PlayerAction
 {
     NONE,
+    START_GAME,
     GET_DAMAGE,
     SHOOT,
     DIE,
@@ -219,6 +220,9 @@ public class Client : MonoBehaviour
 
         if (isPlayerInGame(packet, out PlayerScript existingPlayer))
             yield break;
+
+        if (GameObject.Find("StartGameButton"))
+            GameObject.Find("StartGameButton").SetActive(false);
 
         Debug.Log("Instantiating new player...");
         GameObject instantiatedObj = Instantiate(playerID == packet.playerID ? playerTankPref : tankPref, 
