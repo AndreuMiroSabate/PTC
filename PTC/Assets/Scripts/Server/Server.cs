@@ -15,6 +15,8 @@ public class Server : MonoBehaviour
     private readonly List<EndPoint> endPoints = new List<EndPoint>();
     private readonly object lockObject = new object();
 
+    private bool gameStarted = false;
+
     public void StartServer()
     {
         serverText = "Starting UDP Server...";

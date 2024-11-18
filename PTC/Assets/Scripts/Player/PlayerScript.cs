@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+public enum PlayerState
+{
+    WAIT,
+    PLAYING,
+    DEAD,
+}
+
 public class PlayerScript : MonoBehaviour
 {
     public Rigidbody playerRb;
@@ -24,6 +31,9 @@ public class PlayerScript : MonoBehaviour
     public UpdatePackages playerUpdate;
 
     [HideInInspector]
+    public PlayerState playerState;
+
+    [HideInInspector]
     public Packet playerPacket;
 
     [HideInInspector]
@@ -38,6 +48,7 @@ public class PlayerScript : MonoBehaviour
     private void Start()
     {
         playerUpdate?.Invoke(playerPacket);
+        playerState = PlayerState.WAIT;
     }
 
     private void Update()
