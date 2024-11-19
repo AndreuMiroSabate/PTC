@@ -14,7 +14,7 @@ public class Server : MonoBehaviour
     private Socket socket;
     private string serverText;
     private readonly List<EndPoint> endPoints = new List<EndPoint>();
-    private List<string> playersInLobbyIDs = new List<string>();
+    private List<Packet> playerInLobbyPacket = new List<Packet>();
     private ConcurrentQueue<Packet> receivedPackets = new ConcurrentQueue<Packet>();
 
     private readonly object lockObject = new object();
@@ -105,7 +105,7 @@ public class Server : MonoBehaviour
             startGameButton.onClick.AddListener(StartGame);
         }
 
-        playersInLobbyIDs.Add(packet.playerID);
+        playerInLobbyPacket.Add(packet);
         return packet;
     }
 
@@ -114,7 +114,7 @@ public class Server : MonoBehaviour
         startGameButton.gameObject.SetActive(false);
         gameStarted = true;
 
-        for (int i = 0; i < playersInLobbyIDs.Count; i++)
+        for (int i = 0; i < playerInLobbyPacket.Count; i++)
         {
             int x = i + 1;
             string objSpawnPos = "Player_" + x + "_SpawnPoint";
@@ -124,7 +124,8 @@ public class Server : MonoBehaviour
             {
                 playerPosition = GameObject.Find(objSpawnPos).transform.position,
                 playerAction = PlayerAction.START_GAME,
-                playerID = playersInLobbyIDs[i],
+                playerID = playerInLobbyPacket[i].playerID,
+                playerName = playerInLobbyPacket[i].playerName,
             };
 
             Broadcast(packet);
