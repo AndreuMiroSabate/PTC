@@ -6,11 +6,11 @@ public class PlayerScriptNoMove : PlayerScript
 {
     private void Update()
     {
-        
+        //Update no imput check
     }
 
     void FixedUpdate()
     {
-        
+        //FixedUpdate no imput check
     }
 }

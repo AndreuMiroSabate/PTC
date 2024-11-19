@@ -116,10 +116,10 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
-    //Funcion para lanzar un proyectil
+    //Fire a projectile
     public void FireProjectile()
     {
-        //Check cooldown
+        //TODO Check cooldown
 
         // Shoot particle and effects
         Destroy(Instantiate(smokeParticlePref, canonBarrelTransform.position, canonBarrelTransform.rotation), .5f);
@@ -129,13 +129,13 @@ public class PlayerScript : MonoBehaviour
         projectile.GetComponent<BouncingBullet>().GetAllValues(gameObject, canonBarrelTransform.forward, 1, 1);
     }
 
-    //Funcion para recibir daño
+    //Receive damage from other players
     public void ReceiveDamage()
     {
-    
+        //TODO
     }
 
-    //Función para actualizar valores
+    //Update player values
     public void GetPlayerValues(Packet playerPacket)
     {
         //postion
@@ -178,7 +178,7 @@ public class PlayerScript : MonoBehaviour
 
         playerUpdate?.Invoke(playerPacket);
 
-        //Reinicia la accion
+        //Restart Action
         playerPacket.playerAction = PlayerAction.NONE;
     }
 
