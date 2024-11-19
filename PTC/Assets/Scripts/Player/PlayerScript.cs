@@ -14,7 +14,6 @@ public class PlayerScript : MonoBehaviour
 {
     public Rigidbody playerRb;
     public Transform playerTrans;
-    public float speed = 17;
 
     [Space]
     public Transform canonTransform;
@@ -43,12 +42,17 @@ public class PlayerScript : MonoBehaviour
     public string playerName;
 
     [HideInInspector]
-    public float rotation = 60f;
+    public float speed;
+
+    [HideInInspector]
+    public float rotation;
 
     private void Start()
     {
         playerUpdate?.Invoke(playerPacket);
         playerState = PlayerState.WAIT;
+        speed = 10;
+        rotation = 90f;
     }
 
     private void Update()
