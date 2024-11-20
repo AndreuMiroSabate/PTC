@@ -1,0 +1,42 @@
+Github link: https://github.com/AndreuMiroSabate/PTC
+Github Release link: https://github.com/AndreuMiroSabate/PTC/releases/tag/PreAlpha
+
+List of Contributions:
+Jose Antonio Tur: 
+- Player script (send packet logic, receive packet logic)
+- Instance of players when joined in every screen.
+- Serialize and Deserialize logic in both server and client
+- Host is also a player (can be improved)
+
+Andreu Miró Sabaté:
+- Client-Server conection using UDP
+- Initialize Server and client in the menus
+
+Pau Garriga Brotons:
+- Lobby creation
+
+
+Instructions:
+To play:
+- Start a server, put your name and start game. Wait for players
+- To join a server, (in another build) put server ID and your name in the indicated fields. Join the lobby and wait the host.
+- From the server screen start the game.
+In-Game controls:
+- WS --> Move Tank.
+- AD --> Rotate Tank
+- Mouse Move --> Aim turret.
+- Left click --> Shoot popcorn.
+Menu controls:
+- Mouse move--> Move cursor.
+- Left Click --> Select.
+
+Main Scene to Run: "Menu Scene".
+
+Difficulties and bugs:
+- We had a very tough time trying to understand how to connect both the client and the server together, the Parse of the IP gave us some problems.
+- When we discovered what went wrong we met another obstacle, the message was wrongly sent, and it was received as an empty package.
+- The server only worked if it was opened from a build (not the unity editor).
+- One player could only see another player after they moved for the first time. (Solved)
+- Tanks break through walls, this should not happen in the final delivery.
+- More than 4 players break the game (a player cap is needed)
+- There is no game loop yet, the players don't receive damage.
