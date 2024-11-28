@@ -25,7 +25,7 @@ public class PlayerScript : MonoBehaviour
     [Space]
     public TextMeshPro playerNameTXT;
     
-    public delegate void UpdatePackages(Packet package);
+    public delegate void UpdatePackages(ThePacket package);
 
     public UpdatePackages playerUpdate;
 
@@ -33,7 +33,7 @@ public class PlayerScript : MonoBehaviour
     public PlayerState playerState;
 
     [HideInInspector]
-    public Packet playerPacket;
+    public PlayerPacket playerPacket;
 
     [HideInInspector]
     public string playerID;
@@ -49,7 +49,18 @@ public class PlayerScript : MonoBehaviour
 
     private void Start()
     {
-        playerUpdate?.Invoke(playerPacket);
+        ThePacket thePacket = new ThePacket
+        {
+            playerPacket = playerPacket,
+            worldPacket = new WorldPacket
+            {
+                worldAction = WorldActions.NONE,
+                worlPacketID = "",
+                powerUpPosition = Vector3.zero,
+            },
+        };
+
+        playerUpdate?.Invoke(thePacket);
         playerState = PlayerState.WAIT;
         speed = 10;
         rotation = 90f;
@@ -145,7 +156,7 @@ public class PlayerScript : MonoBehaviour
     }
 
     //Update player values
-    public void GetPlayerValues(Packet playerPacket)
+    public void GetPlayerValues(PlayerPacket playerPacket)
     {
         //postion
         transform.position = playerPacket.playerPosition;
@@ -176,7 +187,6 @@ public class PlayerScript : MonoBehaviour
                 
                 break;
         }
-
     }
 
     void updatePacket()
@@ -185,7 +195,14 @@ public class PlayerScript : MonoBehaviour
         playerPacket.playerRotation = transform.rotation;
         playerPacket.playerCanonRotation = canonTransform.rotation;
 
-        playerUpdate?.Invoke(playerPacket);
+        ThePacket thePacket = new ThePacket
+        {
+            playerPacket = playerPacket,
+            // Reset the world packet, the connection should only be server-player for this
+            worldPacket = new WorldPacket(),
+        };
+
+        playerUpdate?.Invoke(thePacket);
 
         //Restart Action
         playerPacket.playerAction = PlayerAction.NONE;
@@ -193,7 +210,7 @@ public class PlayerScript : MonoBehaviour
 
     public void SetInitialValues(string PlayerID, string PlayerName)
     {
-        playerPacket = new Packet();
+        playerPacket = new PlayerPacket();
         playerPacket.playerID = playerID = PlayerID;
         playerPacket.playerPosition = transform.position;
         playerPacket.playerRotation = transform.rotation;

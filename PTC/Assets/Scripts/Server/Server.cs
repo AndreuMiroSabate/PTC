@@ -9,13 +9,20 @@ using System.Net;
 using System.IO;
 using System;
 
+[System.Serializable]
+public struct ThePacket
+{
+    public PlayerPacket playerPacket;
+    public WorldPacket worldPacket;
+}
+
 public class Server : MonoBehaviour
 {
     private Socket socket;
     private string serverText;
     private readonly List<EndPoint> endPoints = new List<EndPoint>();
-    private List<Packet> playerInLobbyPacket = new List<Packet>();
-    private ConcurrentQueue<Packet> receivedPackets = new ConcurrentQueue<Packet>();
+    private List<ThePacket> playerInLobbyPacket = new List<ThePacket>();
+    private ConcurrentQueue<ThePacket> receivedPackets = new ConcurrentQueue<ThePacket>();
 
     private readonly object lockObject = new object();
 
@@ -43,7 +50,7 @@ public class Server : MonoBehaviour
     private void Update()
     {
         // Process received packets
-        while (receivedPackets.TryDequeue(out Packet packet))
+        while (receivedPackets.TryDequeue(out ThePacket packet))
         {
             Broadcast(packet);
         }
@@ -51,8 +58,8 @@ public class Server : MonoBehaviour
 
     private void Receive()
     {
-        byte[] data = new byte[1024];
-        Packet receivedPacket;
+        byte[] data = new byte[2048];
+        ThePacket receivedPacket;
 
         Debug.Log("\nWaiting for new clients...");
 
@@ -66,8 +73,8 @@ public class Server : MonoBehaviour
                 // Deserialize received data
                 using (MemoryStream stream = new MemoryStream(data, 0, recv))
                 {
-                    XmlSerializer serializer = new XmlSerializer(typeof(Packet));
-                    receivedPacket = (Packet)serializer.Deserialize(stream);
+                    XmlSerializer serializer = new XmlSerializer(typeof(ThePacket));
+                    receivedPacket = (ThePacket)serializer.Deserialize(stream);
                 }
 
                 // Add new clients to the list
@@ -81,7 +88,7 @@ public class Server : MonoBehaviour
                     }
                 }
 
-                Debug.Log("Received packet from client: Player ID - " + receivedPacket.playerID);
+                Debug.Log("Received packet from client: Player ID - " + receivedPacket.playerPacket.playerID);
 
                 // Enqueue the received packet to all connected clients
                 receivedPackets.Enqueue(receivedPacket);
@@ -93,15 +100,17 @@ public class Server : MonoBehaviour
         }
     }
 
-    private Packet SpawnPointPositionForPlayer(Packet packet)
+    private ThePacket SpawnPointPositionForPlayer(ThePacket packet)
     {
         string objSpawnPos = "Player_" + endPoints.Count.ToString() + "_SpawnPoint";
-        packet.playerPosition = GameObject.Find(objSpawnPos).transform.position;
 
         if (!startGameButton)
         {
             GameObject.Find("WarningForPlayer").SetActive(false);
             startGameButton = GameObject.Find("StartGameButton").GetComponent<Button>();
+
+            packet.playerPacket.playerPosition = GameObject.Find(objSpawnPos).transform.position;
+
             startGameButton.onClick.AddListener(StartGame);
         }
 
@@ -120,19 +129,30 @@ public class Server : MonoBehaviour
             string objSpawnPos = "Player_" + x + "_SpawnPoint";
 
             //Create packet
-            Packet packet = new Packet
+            PlayerPacket packet = new PlayerPacket
             {
                 playerPosition = GameObject.Find(objSpawnPos).transform.position,
                 playerAction = PlayerAction.START_GAME,
-                playerID = playerInLobbyPacket[i].playerID,
-                playerName = playerInLobbyPacket[i].playerName,
+                playerID = playerInLobbyPacket[i].playerPacket.playerID,
+                playerName = playerInLobbyPacket[i].playerPacket.playerName,
             };
 
-            Broadcast(packet);
+            ThePacket thePacket = new ThePacket
+            {
+                playerPacket = packet,
+                worldPacket = new WorldPacket
+                {
+                    worldAction = WorldActions.NONE,
+                    worlPacketID = "",
+                    powerUpPosition = Vector3.zero,
+                },
+            };
+
+            Broadcast(thePacket);
         }
     }
 
-    private void Broadcast(Packet packet)
+    private void Broadcast(ThePacket packet)
     {
         byte[] sendBytes;
 
@@ -145,7 +165,7 @@ public class Server : MonoBehaviour
         // Serialize the packet
         using (MemoryStream stream = new MemoryStream())
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+            XmlSerializer serializer = new XmlSerializer(typeof(ThePacket));
             serializer.Serialize(stream, packet);
             sendBytes = stream.ToArray();
         }

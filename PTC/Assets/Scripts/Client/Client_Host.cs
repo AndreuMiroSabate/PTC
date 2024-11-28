@@ -21,7 +21,7 @@ public class Client_Host : MonoBehaviour
     public GameObject tankPref;
 
     private List<PlayerScript> currentLobbyPlayers = new List<PlayerScript>();
-    private ConcurrentQueue<Packet> receivedPackets = new ConcurrentQueue<Packet>();
+    private ConcurrentQueue<ThePacket> receivedPackets = new ConcurrentQueue<ThePacket>();
 
     private Thread receiveThread;
 
@@ -37,13 +37,25 @@ public class Client_Host : MonoBehaviour
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
         // Send initial packet
-        Packet initialPacket = new Packet
+        PlayerPacket initialPacket = new PlayerPacket
         {
             playerID = playerID,
             playerName = playerNameTextMesh.text,
             playerPosition = new Vector3(0, 5, 0)
         };
-        Send(initialPacket);
+
+        ThePacket thePacket = new ThePacket
+        {
+            playerPacket = initialPacket,
+            worldPacket = new WorldPacket 
+            {
+                worldAction = WorldActions.NONE,
+                worlPacketID = "",
+                powerUpPosition = Vector3.zero,
+            },
+        };
+
+        Send(thePacket);
 
         // Start receiving thread
         receiveThread = new Thread(Receive);
@@ -57,7 +69,7 @@ public class Client_Host : MonoBehaviour
     private void Update()
     {
         // Process received packets
-        while (receivedPackets.TryDequeue(out Packet packet))
+        while (receivedPackets.TryDequeue(out ThePacket packet))
         {
             ProcessPacket(packet);
         }
@@ -94,13 +106,13 @@ public class Client_Host : MonoBehaviour
         }
     }
 
-    private void Send(Packet packet)
+    private void Send(ThePacket packet)
     {
         try
         {
             IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse(serverIP), 9050);
 
-            XmlSerializer serializer = new XmlSerializer(typeof(Packet));
+            XmlSerializer serializer = new XmlSerializer(typeof(ThePacket));
             using (MemoryStream stream = new MemoryStream())
             {
                 serializer.Serialize(stream, packet);
@@ -108,7 +120,7 @@ public class Client_Host : MonoBehaviour
                 socket.SendTo(sendBytes, serverEndpoint);
             }
 
-            Debug.Log("Sent packet to server: Player ID - " + packet.playerID);
+            Debug.Log("Sent packet to server: Player ID - " + packet.playerPacket.playerID);
         }
         catch (Exception e)
         {
@@ -118,7 +130,7 @@ public class Client_Host : MonoBehaviour
 
     private void Receive()
     {
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[2048];
 
         while (!isDisposed)
         {
@@ -131,10 +143,10 @@ public class Client_Host : MonoBehaviour
                 {
                     using (MemoryStream stream = new MemoryStream(buffer, 0, receivedBytes))
                     {
-                        XmlSerializer serializer = new XmlSerializer(typeof(Packet));
-                        Packet receivedPacket = (Packet)serializer.Deserialize(stream);
+                        XmlSerializer serializer = new XmlSerializer(typeof(ThePacket));
+                        ThePacket receivedPacket = (ThePacket)serializer.Deserialize(stream);
                         receivedPackets.Enqueue(receivedPacket);
-                        Debug.Log("Received packet from server: Player ID - " + receivedPacket.playerID);
+                        Debug.Log("Received packet from server: Player ID - " + receivedPacket.playerPacket.playerID);
                     }
                 }
             }
@@ -148,13 +160,13 @@ public class Client_Host : MonoBehaviour
         }
     }
 
-    private void ProcessPacket(Packet packet)
+    private void ProcessPacket(ThePacket packet)
     {
         // Check if the player already exists
         if (isPlayerInGame(packet, out PlayerScript existingPlayer))
         {
             // Update player's values
-            existingPlayer.GetPlayerValues(packet);
+            existingPlayer.GetPlayerValues(packet.playerPacket);
 
             return;
         }
@@ -163,11 +175,11 @@ public class Client_Host : MonoBehaviour
         StartCoroutine(InstancePlayer(packet));
     }
 
-    private bool isPlayerInGame(Packet packet, out PlayerScript myPlayer)
+    private bool isPlayerInGame(ThePacket packet, out PlayerScript myPlayer)
     {
         foreach (var player in currentLobbyPlayers)
         {
-            if (packet.playerID.Equals(player.playerID))
+            if (packet.playerPacket.playerID.Equals(player.playerID))
             {
                 myPlayer = player;
                 return true;
@@ -178,7 +190,7 @@ public class Client_Host : MonoBehaviour
         return false;
     }
 
-    private IEnumerator InstancePlayer(Packet packet)
+    private IEnumerator InstancePlayer(ThePacket packet)
     {
         yield return null; // Wait until the next frame to instantiate
 
@@ -186,15 +198,15 @@ public class Client_Host : MonoBehaviour
             yield break;
 
         Debug.Log("Instantiating new player...");
-        GameObject instantiatedObj = Instantiate(playerID == packet.playerID ? playerTankPref : tankPref,
-                                                packet.playerPosition, packet.playerRotation);
+        GameObject instantiatedObj = Instantiate(playerID == packet.playerPacket.playerID ? playerTankPref : tankPref,
+                                                packet.playerPacket.playerPosition, packet.playerPacket.playerRotation);
 
         PlayerScript playerScript = instantiatedObj.GetComponent<PlayerScript>();
 
         if (playerScript != null)
         {
             currentLobbyPlayers.Add(playerScript);
-            playerScript.SetInitialValues(packet.playerID, packet.playerName);
+            playerScript.SetInitialValues(packet.playerPacket.playerID, packet.playerPacket.playerName);
             playerScript.playerUpdate += Send;
             Debug.Log("Player instantiated and added to lobby: " + playerScript.playerID);
         }
