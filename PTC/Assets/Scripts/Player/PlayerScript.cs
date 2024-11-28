@@ -78,11 +78,16 @@ public class PlayerScript : MonoBehaviour
         float verticalInput = Input.GetAxis("Vertical");   // Forward/Backward (-1 to 1)
         float horizontalInput = Input.GetAxis("Horizontal"); // Left/Right (-1 to 1)
 
-        // Move the player based on vertical input
+        // Move the player based on vertical input using Rigidbody
         if (Mathf.Abs(verticalInput) > 0.01f) // Add a small threshold to avoid unnecessary updates
         {
             Vector3 movement = transform.right * verticalInput * speed * Time.deltaTime;
-            transform.Translate(movement, Space.World);
+
+            RaycastHit hit;
+            if (!Physics.Raycast(transform.position, movement.normalized, out hit, movement.magnitude))
+            {
+                transform.Translate(movement, Space.World);
+            }
         }
 
         // Rotate the player based on horizontal input
@@ -92,7 +97,7 @@ public class PlayerScript : MonoBehaviour
             transform.rotation *= deltaRotation;
         }
 
-        updatePacket();
+        //updatePacket();
     }
 
     void AimCannonAtMouse()
