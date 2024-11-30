@@ -187,4 +187,21 @@ public class Server : MonoBehaviour
             }
         }
     }
+
+    //public void SendWorldPacket(WorldPacket packet)
+    //{
+        //Serializar el paquete y enviarlo a los clientes
+        //XmlSerializer serializer = new XmlSerializer(typeof(WorldPacket));
+        //using (MemoryStream stream = new MemoryStream())
+        //{
+            //serializer.Serialize(stream, packet);
+            //byte[] data = stream.ToArray();
+
+            // Suponiendo que tienes una lista de clientes conectados
+            //foreach (var client in connectedClients)
+            //{
+                //socket.SendTo(data, client);
+            //}
+        //}
+    //}
 }

@@ -62,6 +62,8 @@ public class Client : MonoBehaviour
 
     private string serverIP;
 
+    //public ReplicationManagerClient replicationManagerClient;
+
     public void StartClient()
     {
         playerID = Guid.NewGuid().ToString();
@@ -182,6 +184,11 @@ public class Client : MonoBehaviour
                         ThePacket receivedPacket = (ThePacket)serializer.Deserialize(stream);
                         receivedPackets.Enqueue(receivedPacket);
                         Debug.Log("Received packet from server: Player ID - " + receivedPacket.playerPacket.playerID);
+
+                        //XmlSerializer serializer = new XmlSerializer(typeof(WorldPacket));
+                        //WorldPacket worldpacket = (WorldPacket)serializer.Deserialize(stream);
+                        //replicationManagerClient.ReceiveWorldPacket(worldpacket);
+                        //Debug.Log("Received Worldpacket from server: Player ID - " + receivedPacket.playerPacket.playerID);
                     }
                 }
             }
