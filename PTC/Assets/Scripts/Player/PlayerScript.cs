@@ -212,7 +212,12 @@ public class PlayerScript : MonoBehaviour
         //Restart Action
         playerPacket.playerAction = PlayerAction.NONE;
         //Restart World Packet
-        localWorldPacket = new WorldPacket();
+        localWorldPacket = = new WorldPacket
+        {
+            worldAction = WorldActions.NONE,
+            worldPacketID = "",
+            powerUpPosition = Vector3.zero,
+        };
     }
 
     public void SetInitialValues(string PlayerID, string PlayerName)
