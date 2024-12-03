@@ -206,7 +206,7 @@ public class Client : MonoBehaviour
         {
             // Update player's values
             existingPlayer.GetPlayerValues(packet.playerPacket);
-            replicationManagerClient.ReceiveWorldPacket(receivedPacket.worldPacket);
+            replicationManagerClient.ReceiveWorldPacket(packet.worldPacket);
 
             return;
         }
