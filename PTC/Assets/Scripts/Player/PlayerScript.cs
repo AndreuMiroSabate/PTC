@@ -55,7 +55,7 @@ public class PlayerScript : MonoBehaviour
             worldPacket = new WorldPacket
             {
                 worldAction = WorldActions.NONE,
-                worlPacketID = "",
+                worldPacketID = "",
                 powerUpPosition = Vector3.zero,
             },
         };
@@ -181,7 +181,7 @@ public class PlayerScript : MonoBehaviour
                 break;
             case PlayerAction.START_GAME:
                 playerState = PlayerState.PLAYING;
-                GameObject.Find("WarningForPlayer").SetActive(false);
+                GameObject.Find("WarningForPlayer")?.SetActive(false);
 
                 //TODO Play sound
                 

@@ -30,9 +30,13 @@ public class Server : MonoBehaviour
     private bool newPlayerJoined = false;
     private Button startGameButton = null;
 
+    private ReplicationManagerServer replicationManagerServer;
+
     public void StartServer()
     {
         serverText = "Starting UDP Server...";
+
+        replicationManagerServer = GetComponent<ReplicationManagerServer>();
 
         IPEndPoint ipep = new IPEndPoint(IPAddress.Any, 9050);
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -89,6 +93,7 @@ public class Server : MonoBehaviour
                 }
 
                 Debug.Log("Received packet from client: Player ID - " + receivedPacket.playerPacket.playerID);
+                Debug.Log("Received packet from client with world instance of - " + receivedPacket.worldPacket.worldPacketID);
 
                 // Enqueue the received packet to all connected clients
                 receivedPackets.Enqueue(receivedPacket);
@@ -143,7 +148,7 @@ public class Server : MonoBehaviour
                 worldPacket = new WorldPacket
                 {
                     worldAction = WorldActions.NONE,
-                    worlPacketID = "",
+                    worldPacketID = "",
                     powerUpPosition = Vector3.zero,
                 },
             };
@@ -161,6 +166,10 @@ public class Server : MonoBehaviour
             packet = SpawnPointPositionForPlayer(packet);
             newPlayerJoined = false;
         }
+
+        // Get Server World Packet
+        packet.worldPacket = replicationManagerServer.GetServerWorldPacket();
+        replicationManagerServer.ResetServerWorldPacket();
 
         // Serialize the packet
         using (MemoryStream stream = new MemoryStream())
@@ -187,21 +196,4 @@ public class Server : MonoBehaviour
             }
         }
     }
-
-    //public void SendWorldPacket(WorldPacket packet)
-    //{
-        //Serializar el paquete y enviarlo a los clientes
-        //XmlSerializer serializer = new XmlSerializer(typeof(WorldPacket));
-        //using (MemoryStream stream = new MemoryStream())
-        //{
-            //serializer.Serialize(stream, packet);
-            //byte[] data = stream.ToArray();
-
-            // Suponiendo que tienes una lista de clientes conectados
-            //foreach (var client in connectedClients)
-            //{
-                //socket.SendTo(data, client);
-            //}
-        //}
-    //}
 }

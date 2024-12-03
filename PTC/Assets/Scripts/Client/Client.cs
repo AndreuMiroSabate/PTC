@@ -62,12 +62,14 @@ public class Client : MonoBehaviour
 
     private string serverIP;
 
-    //public ReplicationManagerClient replicationManagerClient;
+    private ReplicationManagerClient replicationManagerClient;
 
     public void StartClient()
     {
         playerID = Guid.NewGuid().ToString();
         serverIP = serverIPTextMesh.text.Trim();
+
+        replicationManagerClient = GetComponent<ReplicationManagerClient>();
 
         // Initialize socket
         IPEndPoint ipep = new IPEndPoint(IPAddress.Parse(serverIP), 9050);
@@ -84,12 +86,7 @@ public class Client : MonoBehaviour
         ThePacket thePacket = new ThePacket
         {
             playerPacket = initialPacket,
-            worldPacket = new WorldPacket
-            {
-                worldAction = WorldActions.NONE,
-                worlPacketID = "",
-                powerUpPosition = Vector3.zero,
-            },
+            worldPacket = replicationManagerClient.GetClientWorldPacket(),
         };
 
         Send(thePacket);
@@ -149,6 +146,8 @@ public class Client : MonoBehaviour
         {
             IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse(serverIP), 9050);
 
+            packet.worldPacket = replicationManagerClient.GetClientWorldPacket();
+
             XmlSerializer serializer = new XmlSerializer(typeof(ThePacket));
             using (MemoryStream stream = new MemoryStream())
             {
@@ -158,6 +157,7 @@ public class Client : MonoBehaviour
             }
 
             Debug.Log("Sent packet to server: Player ID - " + packet.playerPacket.playerID);
+            Debug.Log("Received packet from client with world instance of - " + packet.worldPacket.worldPacketID);
         }
         catch (Exception e)
         {
@@ -182,13 +182,10 @@ public class Client : MonoBehaviour
                     {
                         XmlSerializer serializer = new XmlSerializer(typeof(ThePacket));
                         ThePacket receivedPacket = (ThePacket)serializer.Deserialize(stream);
-                        receivedPackets.Enqueue(receivedPacket);
-                        Debug.Log("Received packet from server: Player ID - " + receivedPacket.playerPacket.playerID);
 
-                        //XmlSerializer serializer = new XmlSerializer(typeof(WorldPacket));
-                        //WorldPacket worldpacket = (WorldPacket)serializer.Deserialize(stream);
-                        //replicationManagerClient.ReceiveWorldPacket(worldpacket);
-                        //Debug.Log("Received Worldpacket from server: Player ID - " + receivedPacket.playerPacket.playerID);
+                        receivedPackets.Enqueue(receivedPacket);
+
+                        Debug.Log("Received packet from server: Player ID - " + receivedPacket.playerPacket.playerID);
                     }
                 }
             }
@@ -209,6 +206,7 @@ public class Client : MonoBehaviour
         {
             // Update player's values
             existingPlayer.GetPlayerValues(packet.playerPacket);
+            replicationManagerClient.ReceiveWorldPacket(receivedPacket.worldPacket);
 
             return;
         }

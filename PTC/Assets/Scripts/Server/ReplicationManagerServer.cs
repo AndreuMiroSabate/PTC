@@ -1,5 +1,7 @@
+using AYellowpaper.SerializedCollections;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public enum WorldActions
@@ -14,99 +16,70 @@ public struct WorldPacket
 {
     public WorldActions worldAction;
 
-    public string worlPacketID;
+    public string worldPacketID;
 
     public Vector3 powerUpPosition;
 }
 public class ReplicationManagerServer : MonoBehaviour
 {
-    //public delegate void UpdateWorldPackages(WorldPacket wPackage);
+    [SerializedDictionary("ITEM ID", "ITEM PREFAB")]
+    public SerializedDictionary<string, GameObject> worldObjects = new SerializedDictionary<string, GameObject>();
 
-    //public UpdateWorldPackages worldUpdate;
-    //private void Start()
-    //{
-    //    worldUpdate += GameObject.Find("UDP_Server").GetComponent<Server>
-    //}
+    public delegate void UpdateWorldPackages(WorldPacket wPackage);
+    public UpdateWorldPackages worldUpdate;
 
-    //private void Send(WorldPacket packet)
-    //{
-        
-    //}
+    private WorldPacket localWorldPacket;
+
+    private void Start()
+    {
+        //Initialize world packet
+        localWorldPacket = new WorldPacket
+        {
+            worldAction = WorldActions.NONE,
+            worldPacketID = "",
+            powerUpPosition = Vector3.zero,
+        };
+    }
+
+    // Get packet function
+    public WorldPacket GetServerWorldPacket()
+    {
+        return localWorldPacket;
+    }
+    public void ResetServerWorldPacket()
+    {
+        //Reset world packet
+        localWorldPacket = new WorldPacket
+        {
+            worldAction = WorldActions.NONE,
+            worldPacketID = "",
+            powerUpPosition = Vector3.zero,
+        };
+    }
+
+    private void Update()
+    {
+        // -- DEBUG KEY --
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            SpawnRandomPowerUp();
+            Debug.Log("Spawn Object");
+        }
+    }
+
+    // Spawn power up function
+    void SpawnRandomPowerUp()
+    {
+        string randomID = worldObjects.ElementAt(Random.Range(0, worldObjects.Count)).Key;
+
+        //Change en algun momento TODO
+        Vector2 spawnPos = new Vector2(Random.Range(3, -3), Random.Range(3, -3));
+
+        localWorldPacket = new WorldPacket
+        {
+            worldAction = WorldActions.SPAWN,
+            worldPacketID = randomID,
+            powerUpPosition = new Vector3(spawnPos.x, 0, spawnPos.y),
+        };
+    }
 }
-
-//public class ReplicationManagerServer : MonoBehaviour
-//{
-    //private Dictionary<string, GameObject> worldObjects = new Dictionary<string, GameObject>();
-
-    //public Server server; // Referencia al script UDP del servidor
-
-    //private void Start()
-    //{
-        //if (server == null)
-        //{
-            //server = FindObjectOfType<Server>();
-        //}
-    //}
-
-    //// Registrar un objeto en el mundo con un paquete SPWAN
-    //public void RegisterObject(GameObject obj, string packetID)
-    //{
-        //if (worldObjects.ContainsKey(packetID)) return;
-
-        //worldObjects[packetID] = obj;
-
-        //WorldPacket spawnPacket = new WorldPacket
-        //{
-            //worldAction = WorldActions.SPAWN,
-            //worlPacketID = packetID,
-            //powerUpPosition = obj.transform.position
-        //};
-
-        //SendWorldPacket(spawnPacket);
-    //}
-
-    // Actualizar la posición de un objeto
-    //public void UpdateObject(string packetID, Vector3 newPosition)
-    //{
-        //if (!worldObjects.ContainsKey(packetID)) return;
-
-        //GameObject obj = worldObjects[packetID];
-        //obj.transform.position = newPosition;
-
-        //WorldPacket updatePacket = new WorldPacket
-        //{
-            //worldAction = WorldActions.NONE, // No se requiere acción explícita para actualización simple
-            //worlPacketID = packetID,
-            //powerUpPosition = newPosition
-        //};
-
-        //SendWorldPacket(updatePacket);
-    //}
-
-    // Eliminar un objeto del mundo con un paquete DESTROY
-    //public void RemoveObject(string packetID)
-    //{
-        //if (!worldObjects.ContainsKey(packetID)) return;
-
-        //GameObject obj = worldObjects[packetID];
-        //worldObjects.Remove(packetID);
-        //Destroy(obj);
-
-        //WorldPacket destroyPacket = new WorldPacket
-        //{
-            //worldAction = WorldActions.DESTROY,
-            //worlPacketID = packetID,
-        //};
-
-        //SendWorldPacket(destroyPacket);
-    //}
-
-    // Enviar un paquete al servidor UDP
-    //private void SendWorldPacket(WorldPacket packet)
-    //{
-        //if (server != null)
-        //{
-            //server.SendWorldPacket(packet);
-        //}
-    //}
-//}

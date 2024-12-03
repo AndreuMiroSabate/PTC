@@ -1611,6 +1611,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1047912872}
   - component: {fileID: 1047912873}
+  - component: {fileID: 1047912874}
   m_Layer: 0
   m_Name: UDP_Client
   m_TagString: Untagged
@@ -1649,6 +1650,22 @@ MonoBehaviour:
   tankPref: {fileID: 4417282915845898001, guid: 0c6f402c6970b634882065ef885014f8, type: 3}
   serverIPTextMesh: {fileID: 2138456808}
   playerNameTextMesh: {fileID: 2032048947}
+--- !u!114 &1047912874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1047912870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2bc8f28dba9a9f44acdbad2ce8d472f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  worldObjects:
+    _serializedList:
+    - Key: 1
+      Value: {fileID: 6529580901150070776, guid: a9819ca3b4987094db19a5cb356a83ff, type: 3}
 --- !u!1 &1106579508
 GameObject:
   m_ObjectHideFlags: 0
@@ -3495,6 +3512,8 @@ GameObject:
   - component: {fileID: 1903036504}
   - component: {fileID: 1903036505}
   - component: {fileID: 1903036506}
+  - component: {fileID: 1903036507}
+  - component: {fileID: 1903036508}
   m_Layer: 0
   m_Name: UDP_Server
   m_TagString: Untagged
@@ -3543,6 +3562,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerTankPref: {fileID: 4417282915845898001, guid: 968484b5a196bbd429724a68e6edf65d, type: 3}
   tankPref: {fileID: 4417282915845898001, guid: 0c6f402c6970b634882065ef885014f8, type: 3}
+--- !u!114 &1903036507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1903036501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0ff3a210c1680442bf7a4420f6921b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  worldObjects:
+    _serializedList:
+    - Key: 1
+      Value: {fileID: 6529580901150070776, guid: a9819ca3b4987094db19a5cb356a83ff, type: 3}
+--- !u!114 &1903036508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1903036501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2bc8f28dba9a9f44acdbad2ce8d472f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  worldObjects:
+    _serializedList:
+    - Key: 1
+      Value: {fileID: 6529580901150070776, guid: a9819ca3b4987094db19a5cb356a83ff, type: 3}
 --- !u!1 &1956441193
 GameObject:
   m_ObjectHideFlags: 0

@@ -27,10 +27,14 @@ public class Client_Host : MonoBehaviour
 
     private string serverIP;
 
+    private ReplicationManagerClient replicationManagerClient;
+
     public void StartClient(TMP_InputField playerNameTextMesh)
     {
         playerID = Guid.NewGuid().ToString();
         serverIP = GetLocalIPAddress().Trim();
+
+        replicationManagerClient = GetComponent<ReplicationManagerClient>();
 
         // Initialize socket
         IPEndPoint ipep = new IPEndPoint(IPAddress.Parse(serverIP), 9050);
@@ -47,12 +51,7 @@ public class Client_Host : MonoBehaviour
         ThePacket thePacket = new ThePacket
         {
             playerPacket = initialPacket,
-            worldPacket = new WorldPacket 
-            {
-                worldAction = WorldActions.NONE,
-                worlPacketID = "",
-                powerUpPosition = Vector3.zero,
-            },
+            worldPacket = replicationManagerClient.GetClientWorldPacket(),
         };
 
         Send(thePacket);
@@ -112,6 +111,8 @@ public class Client_Host : MonoBehaviour
         {
             IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse(serverIP), 9050);
 
+            packet.worldPacket = replicationManagerClient.GetClientWorldPacket();
+
             XmlSerializer serializer = new XmlSerializer(typeof(ThePacket));
             using (MemoryStream stream = new MemoryStream())
             {
@@ -145,6 +146,7 @@ public class Client_Host : MonoBehaviour
                     {
                         XmlSerializer serializer = new XmlSerializer(typeof(ThePacket));
                         ThePacket receivedPacket = (ThePacket)serializer.Deserialize(stream);
+
                         receivedPackets.Enqueue(receivedPacket);
                         Debug.Log("Received packet from server: Player ID - " + receivedPacket.playerPacket.playerID);
                     }
@@ -167,6 +169,7 @@ public class Client_Host : MonoBehaviour
         {
             // Update player's values
             existingPlayer.GetPlayerValues(packet.playerPacket);
+            replicationManagerClient.ReceiveWorldPacket(packet.worldPacket);
 
             return;
         }

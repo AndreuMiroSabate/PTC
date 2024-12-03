@@ -1,53 +1,71 @@
-using System.Collections;
+using AYellowpaper.SerializedCollections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ReplicationManagerClient : MonoBehaviour
 {
-    //private Dictionary<string, GameObject> worldObjects = new Dictionary<string, GameObject>();
+    [SerializedDictionary ("ITEM ID", "ITEM PREFAB")]
+    public SerializedDictionary<string, GameObject> worldObjects = new SerializedDictionary<string, GameObject>();
 
-    //public GameObject powerUpPrefab;
+    private Dictionary<string, GameObject> spawnedObjects = new Dictionary<string, GameObject>();
 
-    //public void ReceiveWorldPacket(WorldPacket packet)
-    //{
-        //switch (packet.worldAction)
-        //{
-            //case WorldActions.SPAWN:
-                //SpawnObject(packet);
-                //break;
+    private WorldPacket localWorldPacket;
 
-            //case WorldActions.DESTROY:
-                //DestroyObject(packet);
-                //break;
+    private void Start()
+    {
+        //Initialize world packet
+        localWorldPacket = new WorldPacket
+        {
+            worldAction = WorldActions.NONE,
+            worldPacketID = "",
+            powerUpPosition = Vector3.zero,
+        };
+    }
 
-            //case WorldActions.NONE:
-                //UpdateObject(packet);
-                //break;
-        //}
-    //}
+    // Get packet function
+    public WorldPacket GetClientWorldPacket()
+    {
+        return localWorldPacket;
+    }
 
-    //private void SpawnObject(WorldPacket packet)
-    //{
-        //if (worldObjects.ContainsKey(packet.worlPacketID)) return;
+    public void ReceiveWorldPacket(WorldPacket packet)
+    {
+        switch (packet.worldAction)
+        {
+            case WorldActions.SPAWN:
+                SpawnObject(packet);
+                break;
 
-        //GameObject obj = Instantiate(powerUpPrefab, packet.powerUpPosition, Quaternion.identity);
-        //worldObjects[packet.worlPacketID] = obj;
-    //}
+            case WorldActions.DESTROY:
+                DestroyObject(packet);
+                break;
 
-    //private void UpdateObject(WorldPacket packet)
-    //{
-    //    if (!worldObjects.ContainsKey(packet.worlPacketID)) return;
+            case WorldActions.NONE:
+                //DOES NOTHING - default state
+                break;
+        }
+    }
 
-        //GameObject obj = worldObjects[packet.worlPacketID];
-        //obj.transform.position = packet.powerUpPosition;
-    //}
+    private void SpawnObject(WorldPacket packet)
+    {
+        if (!worldObjects.ContainsKey(packet.worldPacketID)) return;
 
-    //private void DestroyObject(WorldPacket packet)
-    //{
-        //if (!worldObjects.ContainsKey(packet.worlPacketID)) return;
+        GameObject objToSpawn;
+        worldObjects.TryGetValue(packet.worldPacketID, out objToSpawn);
 
-        //GameObject obj = worldObjects[packet.worlPacketID];
-        //worldObjects.Remove(packet.worlPacketID);
-        //Destroy(obj);
-    //}
+        GameObject obj = Instantiate(objToSpawn, packet.powerUpPosition, Quaternion.identity);
+
+        spawnedObjects.Add(packet.worldPacketID, obj);
+    }
+
+    private void DestroyObject(WorldPacket packet)
+    {
+        if (!spawnedObjects.ContainsKey(packet.worldPacketID)) return;
+
+        GameObject objToDestroy;
+        spawnedObjects.TryGetValue(packet.worldPacketID, out objToDestroy);
+        spawnedObjects.Remove(packet.worldPacketID);
+
+        Destroy(objToDestroy);
+    }
 }
