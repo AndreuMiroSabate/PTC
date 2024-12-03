@@ -108,7 +108,7 @@ public class PlayerScript : MonoBehaviour
             transform.rotation *= deltaRotation;
         }
 
-        //updatePacket();
+        updatePacket();
     }
 
     void AimCannonAtMouse()
