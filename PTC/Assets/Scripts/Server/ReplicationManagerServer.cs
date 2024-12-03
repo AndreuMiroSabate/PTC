@@ -73,13 +73,13 @@ public class ReplicationManagerServer : MonoBehaviour
         string randomID = worldObjects.ElementAt(Random.Range(0, worldObjects.Count)).Key;
 
         //Change en algun momento TODO
-        Vector2 spawnPos = new Vector2(Random.Range(3, -3), Random.Range(3, -3));
+        Vector2 spawnPos = new Vector2(Random.Range(15, -15), Random.Range(15, -15));
 
         localWorldPacket = new WorldPacket
         {
             worldAction = WorldActions.SPAWN,
             worldPacketID = randomID,
-            powerUpPosition = new Vector3(spawnPos.x, 0, spawnPos.y),
+            powerUpPosition = new Vector3(spawnPos.x, -3, spawnPos.y),
         };
     }
 }

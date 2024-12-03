@@ -47,6 +47,9 @@ public class PlayerScript : MonoBehaviour
     [HideInInspector]
     public float rotation;
 
+    [HideInInspector]
+    public WorldPacket localWorldPacket;
+
     private void Start()
     {
         ThePacket thePacket = new ThePacket
@@ -199,13 +202,15 @@ public class PlayerScript : MonoBehaviour
         {
             playerPacket = playerPacket,
             // Reset the world packet, the connection should only be server-player for this
-            worldPacket = new WorldPacket(),
+            worldPacket = localWorldPacket,
         };
 
         playerUpdate?.Invoke(thePacket);
 
         //Restart Action
         playerPacket.playerAction = PlayerAction.NONE;
+        //Restart World Packet
+        localWorldPacket = new WorldPacket();
     }
 
     public void SetInitialValues(string PlayerID, string PlayerName)
@@ -215,5 +220,17 @@ public class PlayerScript : MonoBehaviour
         playerPacket.playerPosition = transform.position;
         playerPacket.playerRotation = transform.rotation;
         playerPacket.playerName = playerName = playerNameTXT.text = PlayerName;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("PowerUp"))
+        {
+            localWorldPacket = new WorldPacket
+            {
+                worldAction = WorldActions.DESTROY,
+                worldPacketID = other.name,
+            };
+        }
     }
 }

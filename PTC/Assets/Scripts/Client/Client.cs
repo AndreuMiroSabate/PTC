@@ -146,7 +146,8 @@ public class Client : MonoBehaviour
         {
             IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse(serverIP), 9050);
 
-            packet.worldPacket = replicationManagerClient.GetClientWorldPacket();
+            if(packet.worldPacket.worldPacketID.Equals("")) 
+                packet.worldPacket = replicationManagerClient.GetClientWorldPacket();
 
             XmlSerializer serializer = new XmlSerializer(typeof(ThePacket));
             using (MemoryStream stream = new MemoryStream())
