@@ -52,15 +52,17 @@ public class PlayerScript : MonoBehaviour
 
     private void Start()
     {
+        localWorldPacket = new WorldPacket
+        {
+            worldAction = WorldActions.NONE,
+            worldPacketID = "",
+            powerUpPosition = Vector3.zero,
+        };
+
         ThePacket thePacket = new ThePacket
         {
             playerPacket = playerPacket,
-            worldPacket = new WorldPacket
-            {
-                worldAction = WorldActions.NONE,
-                worldPacketID = "",
-                powerUpPosition = Vector3.zero,
-            },
+            worldPacket = localWorldPacket,
         };
 
         playerUpdate?.Invoke(thePacket);
