@@ -212,7 +212,7 @@ public class PlayerScript : MonoBehaviour
         //Restart Action
         playerPacket.playerAction = PlayerAction.NONE;
         //Restart World Packet
-        localWorldPacket = = new WorldPacket
+        localWorldPacket = new WorldPacket
         {
             worldAction = WorldActions.NONE,
             worldPacketID = "",
