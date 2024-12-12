@@ -211,6 +211,7 @@ public class PlayerScript : MonoBehaviour
 
         //Restart Action
         playerPacket.playerAction = PlayerAction.NONE;
+
         //Restart World Packet
         localWorldPacket = new WorldPacket
         {

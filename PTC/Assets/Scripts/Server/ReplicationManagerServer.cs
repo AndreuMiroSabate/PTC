@@ -46,6 +46,7 @@ public class ReplicationManagerServer : MonoBehaviour
     {
         return localWorldPacket;
     }
+
     public void ResetServerWorldPacket()
     {
         //Reset world packet
@@ -73,7 +74,7 @@ public class ReplicationManagerServer : MonoBehaviour
         string randomID = worldObjects.ElementAt(Random.Range(0, worldObjects.Count)).Key;
 
         //Change en algun momento TODO
-        Vector2 spawnPos = new Vector2(Random.Range(15, -15), Random.Range(15, -15));
+        Vector2 spawnPos = new Vector2(Random.Range(30, -30), Random.Range(30, -30));
 
         localWorldPacket = new WorldPacket
         {

@@ -168,7 +168,9 @@ public class Server : MonoBehaviour
         }
 
         // Get Server World Packet
-        packet.worldPacket = replicationManagerServer.GetServerWorldPacket();
+        if(packet.worldPacket.worldPacketID.Equals("")) 
+            packet.worldPacket = replicationManagerServer.GetServerWorldPacket();
+        
         replicationManagerServer.ResetServerWorldPacket();
 
         // Serialize the packet
