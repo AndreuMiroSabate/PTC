@@ -80,7 +80,8 @@ public class Client : MonoBehaviour
         {
             playerID = playerID,
             playerName = playerNameTextMesh.text,
-            playerPosition = new Vector3(0, 5, 0)
+            playerPosition = new Vector3(0, 5, 0),
+            life = 3
         };
 
         ThePacket thePacket = new ThePacket

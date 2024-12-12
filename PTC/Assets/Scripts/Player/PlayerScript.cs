@@ -155,9 +155,21 @@ public class PlayerScript : MonoBehaviour
     }
 
     //Receive damage from other players
-    public void ReceiveDamage()
+    public void ReceiveDamage(PlayerPacket playerPacket)
     {
-        //TODO
+        playerPacket.life -= 1;
+        Debug.Log(playerPacket.life.ToString());
+        if(playerPacket.life <= 0)
+        {
+            playerPacket.playerAction = PlayerAction.DIE;
+            updatePacket();
+            Debug.Log("died");
+        }
+    }
+
+    public void PlayerDie()
+    {
+        Destroy(gameObject, .5f);
     }
 
     //Update player values
@@ -176,13 +188,13 @@ public class PlayerScript : MonoBehaviour
         switch (playerPacket.playerAction)
         {
             case PlayerAction.GET_DAMAGE:
-                ReceiveDamage();
+                ReceiveDamage(playerPacket);
                 break;
             case PlayerAction.SHOOT:
                 FireProjectile();
                 break;
             case PlayerAction.DIE:
-                //TODO
+                PlayerDie();
                 break;
             case PlayerAction.START_GAME:
                 playerState = PlayerState.PLAYING;
@@ -239,6 +251,14 @@ public class PlayerScript : MonoBehaviour
                 worldAction = WorldActions.DESTROY,
                 worldPacketID = other.name,
             };
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Bullet"))
+        {
+            playerPacket.playerAction = PlayerAction.GET_DAMAGE;
         }
     }
 }
