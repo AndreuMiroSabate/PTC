@@ -30,7 +30,7 @@ public struct PlayerPacket
     public Quaternion playerCanonRotation;
 
     // Player health
-    public float life;
+    public int life;
     // Player ID
     public string playerID;
     // Player name

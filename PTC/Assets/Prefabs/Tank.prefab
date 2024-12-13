@@ -283,6 +283,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tank
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 34d48dd58d0d3aa48961e084d649f448, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -333,7 +337,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerRb: {fileID: 1772738485250545221}
   playerTrans: {fileID: 3892948207647663531}
-  speed: 4
   canonTransform: {fileID: 7037554799864000981}
   floorLayer:
     serializedVersion: 2
@@ -342,6 +345,7 @@ MonoBehaviour:
   bulletPref: {fileID: 5472348247825934207, guid: f33d5e0c8aa7a714cba531c2b323cb11, type: 3}
   smokeParticlePref: {fileID: 6739023416487370313, guid: 77a4564b6a6c33a4f82f6859f0a48d20, type: 3}
   playerNameTXT: {fileID: 7685359928222981271}
+  playerState: 0
   playerPacket:
     playerPosition: {x: 0, y: 0, z: 0}
     playerRotation: {x: 0, y: 0, z: 0, w: 0}
@@ -352,7 +356,13 @@ MonoBehaviour:
     playerAction: 0
   playerID: 
   playerName: 
+  speed: 4
   rotation: 60
+  playerHealth: 3
+  localWorldPacket:
+    worldAction: 0
+    worldPacketID: 
+    powerUpPosition: {x: 0, y: 0, z: 0}
 --- !u!54 &1772738485250545221
 Rigidbody:
   m_ObjectHideFlags: 0

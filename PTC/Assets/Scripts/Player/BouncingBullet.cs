@@ -29,6 +29,14 @@ public class BouncingBullet : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
+        //Check collision with other players
+        if (collision.collider.CompareTag("Player") /*TODO: add mask to not hit yourself*/)
+        {
+            collision.gameObject.GetComponent<PlayerScript>().BulletHit();
+            Destroy(gameObject); // Destroy bullet after max bounces
+            return;
+        }
+
         // Check if the bullet has exceeded the allowed number of bounces
         if (currentBounces >= maxBounces)
         {

@@ -140,6 +140,7 @@ public class Server : MonoBehaviour
                 playerAction = PlayerAction.START_GAME,
                 playerID = playerInLobbyPacket[i].playerPacket.playerID,
                 playerName = playerInLobbyPacket[i].playerPacket.playerName,
+                life = 3,
             };
 
             ThePacket thePacket = new ThePacket

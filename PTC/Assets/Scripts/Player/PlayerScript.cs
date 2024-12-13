@@ -47,11 +47,18 @@ public class PlayerScript : MonoBehaviour
     [HideInInspector]
     public float rotation;
 
+    //[HideInInspector]
+    public int playerHealth = 3;
+
     [HideInInspector]
     public WorldPacket localWorldPacket;
 
     private void Start()
     {
+        //Dwf values for player packet
+        playerPacket.life = playerHealth;
+
+        // Def values for world packet
         localWorldPacket = new WorldPacket
         {
             worldAction = WorldActions.NONE,
@@ -79,7 +86,7 @@ public class PlayerScript : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             playerPacket.playerAction = PlayerAction.SHOOT;
-            updatePacket();
+            UpdatePacket();
         }
     }
 
@@ -113,7 +120,7 @@ public class PlayerScript : MonoBehaviour
             transform.rotation *= deltaRotation;
         }
 
-        updatePacket();
+        UpdatePacket();
     }
 
     void AimCannonAtMouse()
@@ -145,6 +152,7 @@ public class PlayerScript : MonoBehaviour
     public void FireProjectile()
     {
         //TODO Check cooldown
+        if (playerState != PlayerState.PLAYING) return;
 
         // Shoot particle and effects
         Destroy(Instantiate(smokeParticlePref, canonBarrelTransform.position, canonBarrelTransform.rotation), .5f);
@@ -157,19 +165,26 @@ public class PlayerScript : MonoBehaviour
     //Receive damage from other players
     public void ReceiveDamage(PlayerPacket playerPacket)
     {
-        playerPacket.life -= 1;
+        playerHealth -= 1;
         Debug.Log(playerPacket.life.ToString());
         if(playerPacket.life <= 0)
         {
-            playerPacket.playerAction = PlayerAction.DIE;
-            updatePacket();
+            this.playerPacket.playerAction = PlayerAction.DIE;
+            UpdatePacket();
             Debug.Log("died");
         }
     }
 
+    public void BulletHit()
+    {
+        playerPacket.playerAction = PlayerAction.GET_DAMAGE;
+        UpdatePacket();
+    }
+
     public void PlayerDie()
     {
-        Destroy(gameObject, .5f);
+        // TODO: meter corutine para hacerlo más juicy
+        Destroy(gameObject, .1f);
     }
 
     //Update player values
@@ -183,6 +198,10 @@ public class PlayerScript : MonoBehaviour
 
         //canon rotation
         canonTransform.rotation = playerPacket.playerCanonRotation;
+
+        //player health
+        if (playerHealth > playerPacket.life)
+            playerHealth = playerPacket.life;
 
         //actions 
         switch (playerPacket.playerAction)
@@ -206,11 +225,12 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
-    void updatePacket()
+    void UpdatePacket()
     {
         playerPacket.playerPosition = transform.position;
         playerPacket.playerRotation = transform.rotation;
         playerPacket.playerCanonRotation = canonTransform.rotation;
+        playerPacket.life = playerHealth;
 
         ThePacket thePacket = new ThePacket
         {
@@ -251,14 +271,6 @@ public class PlayerScript : MonoBehaviour
                 worldAction = WorldActions.DESTROY,
                 worldPacketID = other.name,
             };
-        }
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Bullet"))
-        {
-            playerPacket.playerAction = PlayerAction.GET_DAMAGE;
         }
     }
 }
