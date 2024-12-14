@@ -1666,6 +1666,8 @@ MonoBehaviour:
     _serializedList:
     - Key: 1
       Value: {fileID: 6529580901150070776, guid: a9819ca3b4987094db19a5cb356a83ff, type: 3}
+    - Key: 2
+      Value: {fileID: 1122406268521428705, guid: 08f910915da622548837d6963f320078, type: 3}
 --- !u!1 &1106579508
 GameObject:
   m_ObjectHideFlags: 0
@@ -3594,6 +3596,8 @@ MonoBehaviour:
     _serializedList:
     - Key: 1
       Value: {fileID: 6529580901150070776, guid: a9819ca3b4987094db19a5cb356a83ff, type: 3}
+    - Key: 2
+      Value: {fileID: 1122406268521428705, guid: 08f910915da622548837d6963f320078, type: 3}
 --- !u!1 &1956441193
 GameObject:
   m_ObjectHideFlags: 0
