@@ -63,6 +63,9 @@ public class PlayerScript : MonoBehaviour
     public int playerHealth = 3;
 
     [HideInInspector]
+    public int bulletBounceNum = 1;
+
+    [HideInInspector]
     public WorldPacket localWorldPacket;
 
     [Space]
@@ -177,7 +180,30 @@ public class PlayerScript : MonoBehaviour
 
         // Instance bullet
         GameObject projectile = Instantiate(bulletPref, canonBarrelTransform.position, canonBarrelTransform.rotation);
-        projectile.GetComponent<BouncingBullet>().GetAllValues(gameObject, canonBarrelTransform.forward, 1, 1);
+        projectile.GetComponent<BouncingBullet>().GetAllValues(gameObject, canonBarrelTransform.forward, bulletBounceNum, 1, activePowerUps);
+
+        if (HasPowerUp(PowerUps.TRIPLE_SHOT)) TripleShotFunction();
+    }
+
+    public void TripleShotFunction()
+    {
+        GameObject projectile;
+
+        // Bullet angled to the left
+        projectile = Instantiate(bulletPref, canonBarrelTransform.position, canonBarrelTransform.rotation);
+        Vector3 leftDirection = Quaternion.Euler(0, -45, 0) * canonBarrelTransform.forward; // 15-degree angle to the left
+        Vector3 leftEndPoint = canonTransform.position + leftDirection * 10f; // Extend the ray
+        Debug.DrawLine(canonTransform.position, leftEndPoint, Color.green, 0.1f);
+
+        projectile.GetComponent<BouncingBullet>().GetAllValues(gameObject, leftDirection, bulletBounceNum, 1, activePowerUps);
+
+        // Bullet angled to the right
+        projectile = Instantiate(bulletPref, canonBarrelTransform.position, canonBarrelTransform.rotation);
+        Vector3 rightDirection = Quaternion.Euler(0, 45, 0) * canonBarrelTransform.forward; // 15-degree angle to the right
+        Vector3 rightEndPoint = canonTransform.position + rightDirection * 10f; // Extend the ray
+        Debug.DrawLine(canonTransform.position, rightEndPoint, Color.blue, 0.1f);
+
+        projectile.GetComponent<BouncingBullet>().GetAllValues(gameObject, rightDirection, bulletBounceNum, 1, activePowerUps);
     }
 
     //Receive damage from other players
@@ -191,7 +217,6 @@ public class PlayerScript : MonoBehaviour
         }
 
         //TODO: feedback animation
-
 
 
         playerHealth -= 1;
@@ -261,10 +286,16 @@ public class PlayerScript : MonoBehaviour
 
                 break;
             case PlayerAction.TRIPLE_SHOT:
+                AddPowerUp(PowerUps.TRIPLE_SHOT);
+
                 break;
             case PlayerAction.MORE_BOUNCING:
+                bulletBounceNum++;
+
                 break;
             case PlayerAction.EXPLOTION_BULLETS:
+                AddPowerUp(PowerUps.EXPLOTION_BULLETS);
+
                 break;
         }
     }

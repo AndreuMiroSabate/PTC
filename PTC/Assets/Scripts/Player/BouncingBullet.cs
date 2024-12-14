@@ -15,13 +15,12 @@ public class BouncingBullet : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        moveDirection = transform.forward; // Initial direction
         Vector3 velocity = moveDirection * speed;
         velocity.y = transform.position.y;
         rb.velocity = velocity; // Set the initial velocity
     }
 
-    public void GetAllValues(GameObject myCreator, Vector3 moveDirection, int maxBounces, int damage)
+    public void GetAllValues(GameObject myCreator, Vector3 moveDirection, int maxBounces, int damage, PowerUps powerUps)
     {
         this.damage = damage;
         this.myCreator = myCreator;

@@ -623,6 +623,7 @@ MonoBehaviour:
   bulletPref: {fileID: 5472348247825934207, guid: f33d5e0c8aa7a714cba531c2b323cb11, type: 3}
   smokeParticlePref: {fileID: 6739023416487370313, guid: 77a4564b6a6c33a4f82f6859f0a48d20, type: 3}
   playerNameTXT: {fileID: 7685359928222981271}
+  activePowerUps: 0
   playerState: 0
   playerPacket:
     playerPosition: {x: 0, y: 0, z: 0}
@@ -637,11 +638,13 @@ MonoBehaviour:
   speed: 4
   rotation: 60
   playerHealth: 3
+  bulletBounceNum: 1
   localWorldPacket:
     worldAction: 0
     worldPacketID: 
     powerUpPosition: {x: 0, y: 0, z: 0}
   shieldPref: {fileID: 5034700083918379304, guid: e71d0f91d058d074393c98cbddf2e2ef, type: 3}
+  shieldSpawned: {fileID: 0}
 --- !u!54 &1772738485250545221
 Rigidbody:
   m_ObjectHideFlags: 0
