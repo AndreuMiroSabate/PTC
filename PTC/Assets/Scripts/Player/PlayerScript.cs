@@ -15,7 +15,8 @@ public enum PowerUps
     None = 0,                   // No power-ups
     SHIELD = 1 << 0,            // 0001
     TRIPLE_SHOT = 1 << 1,       // 0010
-    EXPLOTION_BULLETS = 1 << 2,  // 0100
+    EXPLOTION_BULLETS = 1 << 2, // 0100
+    BOUNCING_BULLET = 1 << 3,   // 1000
 }
 
 public class PlayerScript : MonoBehaviour
@@ -64,6 +65,7 @@ public class PlayerScript : MonoBehaviour
 
     [HideInInspector]
     public int bulletBounceNum = 1;
+    private TrajectoryVisualizer trajectoryVisualizer;
 
     [HideInInspector]
     public WorldPacket localWorldPacket;
@@ -76,7 +78,10 @@ public class PlayerScript : MonoBehaviour
 
     private void Start()
     {
-        //Dwf values for player packet
+        if (GetComponent<TrajectoryVisualizer>())
+            trajectoryVisualizer = GetComponent<TrajectoryVisualizer>();
+
+        // Def values for player packet
         playerPacket.life = playerHealth;
 
         // Def values for world packet
@@ -291,6 +296,7 @@ public class PlayerScript : MonoBehaviour
                 break;
             case PlayerAction.MORE_BOUNCING:
                 bulletBounceNum++;
+                trajectoryVisualizer.maxBounces = bulletBounceNum;
 
                 break;
             case PlayerAction.EXPLOTION_BULLETS:
@@ -377,6 +383,9 @@ public class PlayerScript : MonoBehaviour
                     break;
                 case PowerUps.EXPLOTION_BULLETS:
                     playerPacket.playerAction = PlayerAction.EXPLOTION_BULLETS;
+                    break;
+                case PowerUps.BOUNCING_BULLET:
+                    playerPacket.playerAction = PlayerAction.MORE_BOUNCING;
                     break;
                 default:
                     break;
