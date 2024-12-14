@@ -9,6 +9,14 @@ public enum PlayerState
     PLAYING,
     DEAD,
 }
+[System.Flags]
+public enum PowerUps
+{
+    None = 0,                   // No power-ups
+    SHIELD = 1 << 0,            // 0001
+    TRIPLE_SHOT = 1 << 1,       // 0010
+    EXPLOTION_BULLETS = 1 << 2,  // 0100
+}
 
 public class PlayerScript : MonoBehaviour
 {
@@ -25,6 +33,9 @@ public class PlayerScript : MonoBehaviour
     [Space]
     public TextMeshPro playerNameTXT;
     
+    [Space]
+    public PowerUps activePowerUps = PowerUps.None;
+
     public delegate void UpdatePackages(ThePacket package);
 
     public UpdatePackages playerUpdate;
@@ -47,11 +58,18 @@ public class PlayerScript : MonoBehaviour
     [HideInInspector]
     public float rotation;
 
-    //[HideInInspector]
+    [Space]
+    [Header("HEALTH")]
     public int playerHealth = 3;
 
     [HideInInspector]
     public WorldPacket localWorldPacket;
+
+    [Space]
+    [Header("POWER UP PREFABS")]
+    public GameObject shieldPref;
+    [HideInInspector]
+    public GameObject shieldSpawned;
 
     private void Start()
     {
@@ -163,15 +181,26 @@ public class PlayerScript : MonoBehaviour
     }
 
     //Receive damage from other players
-    public void ReceiveDamage(PlayerPacket playerPacket)
+    public virtual void ReceiveDamage(PlayerPacket playerPacket)
     {
+        //check if power up shield
+        if (HasPowerUp(PowerUps.SHIELD))
+        {
+            Destroy(shieldSpawned);
+            return;
+        }
+
+        //TODO: feedback animation
+
+
+
         playerHealth -= 1;
-        Debug.Log(playerPacket.life.ToString());
+
+        //If player' health is bellow or equal to 0, dies
         if(playerPacket.life <= 0)
         {
             this.playerPacket.playerAction = PlayerAction.DIE;
             UpdatePacket();
-            Debug.Log("died");
         }
     }
 
@@ -222,6 +251,21 @@ public class PlayerScript : MonoBehaviour
                 //TODO Play sound
                 
                 break;
+
+            case PlayerAction.SHIELD:
+                if (!HasPowerUp(PowerUps.SHIELD))
+                {
+                    AddPowerUp(PowerUps.SHIELD);
+                    shieldSpawned = Instantiate(shieldPref, transform);
+                }
+
+                break;
+            case PlayerAction.TRIPLE_SHOT:
+                break;
+            case PlayerAction.MORE_BOUNCING:
+                break;
+            case PlayerAction.EXPLOTION_BULLETS:
+                break;
         }
     }
 
@@ -253,6 +297,27 @@ public class PlayerScript : MonoBehaviour
         };
     }
 
+    // POWER UPS FUNCTIONS -- START
+
+    public void AddPowerUp(PowerUps powerUp)
+    {
+        activePowerUps |= powerUp;
+    }
+    public void RemovePowerUp(PowerUps powerUp)
+    {
+        activePowerUps &= ~powerUp;
+    }
+    public bool HasPowerUp(PowerUps powerUp)
+    {
+        return (activePowerUps & powerUp) == powerUp;
+    }
+    public void ClearPowerUps()
+    {
+        activePowerUps = PowerUps.None;
+    }
+
+    // POWER UPS FUNCTIONS -- END
+
     public void SetInitialValues(string PlayerID, string PlayerName)
     {
         playerPacket = new PlayerPacket();
@@ -271,6 +336,20 @@ public class PlayerScript : MonoBehaviour
                 worldAction = WorldActions.DESTROY,
                 worldPacketID = other.name,
             };
+            switch (other.GetComponentInParent<PowerUpBehaviour>()?.GetPowerUp())
+            {
+                case PowerUps.SHIELD:
+                    playerPacket.playerAction = PlayerAction.SHIELD;
+                    break;
+                case PowerUps.TRIPLE_SHOT:
+                    playerPacket.playerAction = PlayerAction.TRIPLE_SHOT;
+                    break;
+                case PowerUps.EXPLOTION_BULLETS:
+                    playerPacket.playerAction = PlayerAction.EXPLOTION_BULLETS;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

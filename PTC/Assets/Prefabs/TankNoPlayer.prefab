@@ -225,15 +225,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 34d48dd58d0d3aa48961e084d649f448, type: 3}
       propertyPath: m_LocalScale.x
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 34d48dd58d0d3aa48961e084d649f448, type: 3}
       propertyPath: m_LocalScale.y
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 34d48dd58d0d3aa48961e084d649f448, type: 3}
       propertyPath: m_LocalScale.z
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 34d48dd58d0d3aa48961e084d649f448, type: 3}
       propertyPath: m_LocalPosition.x
@@ -357,6 +357,7 @@ MonoBehaviour:
     worldAction: 0
     worldPacketID: 
     powerUpPosition: {x: 0, y: 0, z: 0}
+  shieldPref: {fileID: 1111642112086937309, guid: 7977ac102194d304ebe9a6d8df2fa91a, type: 3}
 --- !u!54 &1772738485250545221
 Rigidbody:
   m_ObjectHideFlags: 0

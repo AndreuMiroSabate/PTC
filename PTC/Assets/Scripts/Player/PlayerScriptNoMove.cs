@@ -13,4 +13,9 @@ public class PlayerScriptNoMove : PlayerScript
     {
         //FixedUpdate no imput check
     }
+
+    public override void ReceiveDamage(PlayerPacket playerPacket)
+    {
+        //Does nothing to avoid double hits
+    }
 }

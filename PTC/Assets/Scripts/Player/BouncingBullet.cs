@@ -16,7 +16,9 @@ public class BouncingBullet : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         moveDirection = transform.forward; // Initial direction
-        rb.velocity = moveDirection * speed; // Set the initial velocity
+        Vector3 velocity = moveDirection * speed;
+        velocity.y = transform.position.y;
+        rb.velocity = velocity; // Set the initial velocity
     }
 
     public void GetAllValues(GameObject myCreator, Vector3 moveDirection, int maxBounces, int damage)
@@ -33,6 +35,9 @@ public class BouncingBullet : MonoBehaviour
         if (collision.collider.CompareTag("Player") && collision.gameObject != myCreator)
         {
             collision.gameObject.GetComponent<PlayerScript>().BulletHit();
+
+            //TODO: power up de explosion
+
             Destroy(gameObject); // Destroy bullet after max bounces
             return;
         }
@@ -40,6 +45,8 @@ public class BouncingBullet : MonoBehaviour
         // Check if the bullet has exceeded the allowed number of bounces
         if (currentBounces >= maxBounces)
         {
+            //TODO: power up de explosion
+
             Destroy(gameObject); // Destroy bullet after max bounces
             return;
         }
@@ -54,8 +61,7 @@ public class BouncingBullet : MonoBehaviour
 
     void Update()
     {
-        // Optional: Destroy bullet if it moves too far (to prevent infinite movement)
-        if (Vector3.Distance(transform.position, Vector3.zero) > 1000f)
+        if (Vector3.Distance(transform.position, Vector3.zero) > 100f)
         {
             Destroy(gameObject);
         }

@@ -13,13 +13,18 @@ using System.Collections.Concurrent;
 [System.Serializable]
 public enum PlayerAction
 {
+    //PLAYER ACTIONS
     NONE,
     START_GAME,
     GET_DAMAGE,
     SHOOT,
     DIE,
 
-    //TODO pick ups
+    //POWER UPS
+    MORE_BOUNCING,
+    SHIELD,
+    TRIPLE_SHOT,
+    EXPLOTION_BULLETS,
 }
 
 [System.Serializable]

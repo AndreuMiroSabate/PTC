@@ -11,7 +11,7 @@ public class ReplicationManagerClient : MonoBehaviour
 
     private WorldPacket localWorldPacket;
 
-    private void Start()
+    private void Awake()
     {
         //Initialize world packet
         localWorldPacket = new WorldPacket
