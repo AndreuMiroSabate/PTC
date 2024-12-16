@@ -633,6 +633,8 @@ MonoBehaviour:
   rotation: 60
   playerHealth: 3
   bulletBounceNum: 1
+  shootCoolDown: 0.5
+  shootCoolDownTimer: 0
   localWorldPacket:
     worldAction: 0
     worldPacketID: 

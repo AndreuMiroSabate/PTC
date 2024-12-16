@@ -67,6 +67,10 @@ public class PlayerScript : MonoBehaviour
     public int bulletBounceNum = 1;
     private TrajectoryVisualizer trajectoryVisualizer;
 
+    public float shootCoolDown;
+    [HideInInspector]
+    public float shootCoolDownTimer;
+
     [HideInInspector]
     public WorldPacket localWorldPacket;
 
@@ -83,6 +87,8 @@ public class PlayerScript : MonoBehaviour
 
         // Def values for player packet
         playerPacket.life = playerHealth;
+
+        shootCoolDownTimer = Time.time;
 
         // Def values for world packet
         localWorldPacket = new WorldPacket
@@ -178,7 +184,7 @@ public class PlayerScript : MonoBehaviour
     public void FireProjectile()
     {
         //TODO Check cooldown
-        if (playerState != PlayerState.PLAYING) return;
+        if (playerState != PlayerState.PLAYING && (Time.time - shootCoolDownTimer >= shootCoolDown)) return;
 
         // Shoot particle and effects
         Destroy(Instantiate(smokeParticlePref, canonBarrelTransform.position, canonBarrelTransform.rotation), .5f);
@@ -188,6 +194,9 @@ public class PlayerScript : MonoBehaviour
         projectile.GetComponent<BouncingBullet>().GetAllValues(gameObject, canonBarrelTransform.forward, bulletBounceNum, 1, activePowerUps);
 
         if (HasPowerUp(PowerUps.TRIPLE_SHOT)) TripleShotFunction();
+
+        //Reset Timer
+        shootCoolDown = Time.time;
     }
 
     public void TripleShotFunction()
