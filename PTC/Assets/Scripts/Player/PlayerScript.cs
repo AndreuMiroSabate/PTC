@@ -184,7 +184,7 @@ public class PlayerScript : MonoBehaviour
     public void FireProjectile()
     {
         //TODO Check cooldown
-        if (playerState != PlayerState.PLAYING && (Time.time - shootCoolDownTimer >= shootCoolDown)) return;
+        if (playerState != PlayerState.PLAYING && (Time.time - shootCoolDownTimer <= shootCoolDown)) return;
 
         // Shoot particle and effects
         Destroy(Instantiate(smokeParticlePref, canonBarrelTransform.position, canonBarrelTransform.rotation), .5f);
