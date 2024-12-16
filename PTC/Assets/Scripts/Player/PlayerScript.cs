@@ -184,7 +184,8 @@ public class PlayerScript : MonoBehaviour
     public void FireProjectile()
     {
         //TODO Check cooldown
-        if (playerState != PlayerState.PLAYING && (Time.time - shootCoolDownTimer <= shootCoolDown)) return;
+        if (playerState != PlayerState.PLAYING) return;
+        if (Time.time - shootCoolDownTimer <= shootCoolDown) return;
 
         // Shoot particle and effects
         Destroy(Instantiate(smokeParticlePref, canonBarrelTransform.position, canonBarrelTransform.rotation), .5f);
@@ -196,7 +197,7 @@ public class PlayerScript : MonoBehaviour
         if (HasPowerUp(PowerUps.TRIPLE_SHOT)) TripleShotFunction();
 
         //Reset Timer
-        shootCoolDown = Time.time;
+        shootCoolDownTimer = Time.time;
     }
 
     public void TripleShotFunction()
