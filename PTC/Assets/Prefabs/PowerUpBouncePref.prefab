@@ -6379,7 +6379,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 5541c512c4ffc4e43bee46ea96f40fbd, type: 2}
     - target: {fileID: 919132149155446097, guid: bf0259e71f0466a4b9c31ab15b48c8fd, type: 3}
       propertyPath: m_Name
-      value: SlinkyPref
+      value: PowerUpBouncePref
       objectReference: {fileID: 0}
     - target: {fileID: 1412789662728852009, guid: bf0259e71f0466a4b9c31ab15b48c8fd, type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -6638,7 +6638,7 @@ MonoBehaviour:
   myPowerUp: 8
   moveDistance: 2
   moveDuration: 2
-  rotationAngles: {x: 0, y: 180, z: 0}
+  rotationAngles: {x: 0, y: 360, z: 0}
   rotationDuration: 2
   loop: 1
   loopType: 1

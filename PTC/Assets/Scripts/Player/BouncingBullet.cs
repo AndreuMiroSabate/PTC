@@ -4,6 +4,9 @@ public class BouncingBullet : MonoBehaviour
 {
     public float speed = 10f; // Speed of the bullet
     public int damage = 1; // Damage of the bullet
+    [Space]
+    public GameObject explotionPref;
+
     private int maxBounces = 3; // Maximum number of bounces allowed
     private int currentBounces = 0; // Counter for bounces
     private Vector3 moveDirection; // Current movement direction
@@ -11,6 +14,7 @@ public class BouncingBullet : MonoBehaviour
     private Rigidbody rb; // Reference to Rigidbody
 
     private GameObject myCreator;
+    private PowerUps powerUps;
 
     void Start()
     {
@@ -26,6 +30,7 @@ public class BouncingBullet : MonoBehaviour
         this.myCreator = myCreator;
         this.maxBounces = maxBounces;
         this.moveDirection = moveDirection;
+        this.powerUps = powerUps;
     }
 
     void OnCollisionEnter(Collision collision)
@@ -36,6 +41,8 @@ public class BouncingBullet : MonoBehaviour
             collision.gameObject.GetComponent<PlayerScript>().BulletHit();
 
             //TODO: power up de explosion
+            if (HasPowerUp(PowerUps.EXPLOTION_BULLETS))
+                Destroy(Instantiate(explotionPref, transform.position, Quaternion.identity), 1f);
 
             Destroy(gameObject); // Destroy bullet after max bounces
             return;
@@ -45,6 +52,8 @@ public class BouncingBullet : MonoBehaviour
         if (currentBounces >= maxBounces)
         {
             //TODO: power up de explosion
+            if (HasPowerUp(PowerUps.EXPLOTION_BULLETS))
+                Destroy(Instantiate(explotionPref, transform.position, Quaternion.identity), 1f);
 
             Destroy(gameObject); // Destroy bullet after max bounces
             return;
@@ -64,5 +73,10 @@ public class BouncingBullet : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    public bool HasPowerUp(PowerUps powerUp)
+    {
+        return (powerUps & powerUp) == powerUp;
     }
 }

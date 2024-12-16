@@ -17,5 +17,12 @@ public class PlayerScriptNoMove : PlayerScript
     public override void ReceiveDamage(PlayerPacket playerPacket)
     {
         //Does nothing to avoid double hits
+
+        //check if power up shield
+        if (HasPowerUp(PowerUps.SHIELD))
+        {
+            Destroy(shieldSpawned);
+            return;
+        }
     }
 }
