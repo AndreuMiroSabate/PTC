@@ -30,6 +30,8 @@ public class Server : MonoBehaviour
     private bool newPlayerJoined = false;
     private Button startGameButton = null;
 
+    private int playerNum;
+
     private ReplicationManagerServer replicationManagerServer;
 
     public void StartServer()
@@ -45,6 +47,8 @@ public class Server : MonoBehaviour
         Thread receiveThread = new Thread(Receive);
         receiveThread.IsBackground = true;
         receiveThread.Start();
+
+        playerNum = 0;
 
         DontDestroyOnLoad(gameObject);
 
@@ -84,11 +88,12 @@ public class Server : MonoBehaviour
                 // Add new clients to the list
                 lock (lockObject)
                 {
-                    if (!endPoints.Contains(remoteEndPoint))
+                    if (!endPoints.Contains(remoteEndPoint) & playerNum < 4)
                     {
                         endPoints.Add(remoteEndPoint);
                         newPlayerJoined = true;
                         Debug.Log("New client connected: " + remoteEndPoint);
+                        playerNum++;
                     }
                 }
 
