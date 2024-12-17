@@ -88,7 +88,7 @@ public class Server : MonoBehaviour
                 // Add new clients to the list
                 lock (lockObject)
                 {
-                    if (!endPoints.Contains(remoteEndPoint) & playerNum < 4)
+                    if (!endPoints.Contains(remoteEndPoint) && playerNum < 4)
                     {
                         endPoints.Add(remoteEndPoint);
                         newPlayerJoined = true;

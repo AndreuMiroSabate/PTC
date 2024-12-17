@@ -2,6 +2,7 @@ using AYellowpaper.SerializedCollections;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 public enum WorldActions
@@ -30,6 +31,8 @@ public class ReplicationManagerServer : MonoBehaviour
 
     private WorldPacket localWorldPacket;
 
+    private int spawnTimer = 3000;
+
     private void Start()
     {
         //Initialize world packet
@@ -39,6 +42,7 @@ public class ReplicationManagerServer : MonoBehaviour
             worldPacketID = "",
             powerUpPosition = Vector3.zero,
         };
+        
     }
 
     // Get packet function
@@ -60,11 +64,14 @@ public class ReplicationManagerServer : MonoBehaviour
 
     private void Update()
     {
-        // -- DEBUG KEY --
-        if (Input.GetKeyDown(KeyCode.V))
+        if (spawnTimer == 0) //TODO arreglar esta cutrada
         {
             SpawnRandomPowerUp();
-            Debug.Log("Spawn Object");
+            spawnTimer = 3000;
+        }
+        else 
+        { 
+            spawnTimer--; 
         }
     }
 
@@ -83,4 +90,5 @@ public class ReplicationManagerServer : MonoBehaviour
             powerUpPosition = new Vector3(spawnPos.x, -3, spawnPos.y),
         };
     }
+
 }
