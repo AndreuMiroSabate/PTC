@@ -94,6 +94,10 @@ public class Server : MonoBehaviour
                         Debug.Log("New client connected: " + remoteEndPoint);
                         playerNum++;
                     }
+                    else if (playerNum >= 4)
+                    {
+                        goto CapPlayers;
+                    }
                 }
 
                 Debug.Log("Received packet from client: Player ID - " + receivedPacket.playerPacket.playerID);
@@ -101,6 +105,7 @@ public class Server : MonoBehaviour
 
                 // Enqueue the received packet to all connected clients
                 receivedPackets.Enqueue(receivedPacket);
+                CapPlayers:;
             }
             catch (Exception e)
             {
