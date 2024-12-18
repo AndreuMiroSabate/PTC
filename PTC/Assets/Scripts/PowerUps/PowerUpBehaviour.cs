@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening; // Ensure you include the DOTween namespace
+using DG.Tweening;
 
 public class PowerUpBehaviour : MonoBehaviour
 {

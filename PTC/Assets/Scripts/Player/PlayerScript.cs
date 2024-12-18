@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
@@ -183,7 +181,6 @@ public class PlayerScript : MonoBehaviour
     //Fire a projectile
     public void FireProjectile()
     {
-        //TODO Check cooldown
         if (playerState != PlayerState.PLAYING) return;
         if (Time.time - shootCoolDownTimer <= shootCoolDown) return;
 
@@ -200,7 +197,7 @@ public class PlayerScript : MonoBehaviour
         shootCoolDownTimer = Time.time;
     }
 
-    public void TripleShotFunction()
+    public void TripleShotFunction() //ONly when power up is active
     {
         GameObject projectile;
 

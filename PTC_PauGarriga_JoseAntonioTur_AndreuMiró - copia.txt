@@ -3,11 +3,14 @@ Github Release link:
 
 List of Contributions:
 Jose Antonio Tur: 
-
+- The world packet and restructure the packet that recieves the server.
+- World Replication manager for client and server.
 Andreu Miró Sabaté:
-
+- The world packet and restructure the packet that recieves the server.
+- World Replication manager for client and server.
 Pau Garriga Brotons:
-
+- The world packet and restructure the packet that recieves the server.
+- World Replication manager for client and server.
 
 
 Instructions:
@@ -30,12 +33,13 @@ Power ups:
 - Toy Story alien: Gives you a triple shot
 - Zombies monkey: your bullets explode.
 
-Main Scene to Run: "Menu Scene".
+Main Scene to Run: "MainMenu".
 
 Difficulties and bugs:
 - We had problems with the sending tow differents packets to the server by how we were reciving the packets, but we solve it makinga packet of packets, so know if we want to add another type of packet we can do it without problems.
+- Increasing the packet lenght cause more lag to our game, we need to fix that by the next delivery.
 - There is no win or loose screen.
-- You can't turn back to the menu
-- Ther is no lobby full screen (for someone who wants to join a server that is full)
-- Some power ups appear inside the obstacles
-- The fourth player can't play
+- You can't turn back to the menu.
+- There is no lobby full screen (for someone who wants to join a server that is full).
+- Some power ups appear inside the obstacles.
+- Sometimes, the power ups doesn't disapear for all the clients (starts happening after some power ups spawned).

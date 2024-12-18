@@ -31,8 +31,6 @@ public class ReplicationManagerServer : MonoBehaviour
 
     private WorldPacket localWorldPacket;
 
-    private int spawnTimer = 3000;
-
     private void Start()
     {
         //Initialize world packet

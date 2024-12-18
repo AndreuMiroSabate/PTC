@@ -1,5 +1,5 @@
 using UnityEngine;
-using DG.Tweening; // Ensure DOTween is imported
+using DG.Tweening;
 
 public class ScaleTween : MonoBehaviour
 {

@@ -12,8 +12,8 @@ using System;
 [System.Serializable]
 public struct ThePacket
 {
-    public PlayerPacket playerPacket;
-    public WorldPacket worldPacket;
+    public PlayerPacket playerPacket; // Client update
+    public WorldPacket worldPacket; // World update
 }
 
 public class Server : MonoBehaviour
@@ -29,7 +29,7 @@ public class Server : MonoBehaviour
     private bool newPlayerJoined = false;
     private Button startGameButton = null;
 
-    private int playerNum;
+    private int playerNum; // To count the maximum players of the lobby
 
     private ReplicationManagerServer replicationManagerServer;
 
