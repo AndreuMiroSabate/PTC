@@ -63,7 +63,8 @@ public class PlayerScript : MonoBehaviour
 
     [HideInInspector]
     public int bulletBounceNum = 1;
-    private TrajectoryVisualizer trajectoryVisualizer;
+    [HideInInspector]
+    public TrajectoryVisualizer trajectoryVisualizer;
 
     public float shootCoolDown;
     [HideInInspector]
@@ -303,7 +304,7 @@ public class PlayerScript : MonoBehaviour
                 break;
             case PlayerAction.MORE_BOUNCING:
                 bulletBounceNum++;
-                trajectoryVisualizer.maxBounces = bulletBounceNum;
+                if(trajectoryVisualizer)trajectoryVisualizer.maxBounces = bulletBounceNum;
 
                 break;
             case PlayerAction.EXPLOTION_BULLETS:

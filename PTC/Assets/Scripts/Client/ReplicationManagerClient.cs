@@ -65,7 +65,7 @@ public class ReplicationManagerClient : MonoBehaviour
         GameObject objToDestroy;
         spawnedObjects.TryGetValue(packet.worldPacketID, out objToDestroy);
         spawnedObjects.Remove(packet.worldPacketID);
-
+        spawnedObjects.TrimExcess();
         Destroy(objToDestroy);
     }
 }
