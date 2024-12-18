@@ -26,7 +26,6 @@ public class Server : MonoBehaviour
 
     private readonly object lockObject = new object();
 
-    private bool gameStarted = false;
     private bool newPlayerJoined = false;
     private Button startGameButton = null;
 
@@ -131,7 +130,6 @@ public class Server : MonoBehaviour
     private void StartGame()
     {
         startGameButton.gameObject.SetActive(false);
-        gameStarted = true;
 
         for (int i = 0; i < playerInLobbyPacket.Count; i++)
         {

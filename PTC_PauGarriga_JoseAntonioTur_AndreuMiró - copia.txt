@@ -1,0 +1,41 @@
+Github link: https://github.com/AndreuMiroSabate/PTC
+Github Release link: 
+
+List of Contributions:
+Jose Antonio Tur: 
+
+Andreu Miró Sabaté:
+
+Pau Garriga Brotons:
+
+
+
+Instructions:
+To play:
+- Start a server, put your name and start game. Wait for players
+- To join a server, (in another build) put server ID and your name in the indicated fields. Join the lobby and wait the host.
+- From the server screen start the game.
+In-Game controls:
+- WS --> Move Tank.
+- AD --> Rotate Tank
+- Mouse Move --> Aim turret.
+- Left click --> Shoot popcorn (0.5 shot cooldown).
+Menu controls:
+- Mouse move--> Move cursor.
+- Left Click --> Select.
+
+Power ups:
+- Marble: Gives you a shield that blocks one shot.
+- Spring: Gives your bullets an extra bounce.
+- Toy Story alien: Gives you a triple shot
+- Zombies monkey: your bullets explode.
+
+Main Scene to Run: "Menu Scene".
+
+Difficulties and bugs:
+- We had problems with the sending tow differents packets to the server by how we were reciving the packets, but we solve it makinga packet of packets, so know if we want to add another type of packet we can do it without problems.
+- There is no win or loose screen.
+- You can't turn back to the menu
+- Ther is no lobby full screen (for someone who wants to join a server that is full)
+- Some power ups appear inside the obstacles
+- The fourth player can't play
