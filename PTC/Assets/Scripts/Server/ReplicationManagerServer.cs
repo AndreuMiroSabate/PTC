@@ -42,12 +42,14 @@ public class ReplicationManagerServer : MonoBehaviour
             worldPacketID = "",
             powerUpPosition = Vector3.zero,
         };
-        
     }
 
     // Get packet function
     public WorldPacket GetServerWorldPacket()
     {
+        if (localWorldPacket.worldAction == WorldActions.DESTROY)
+            SpawnRandomPowerUp();
+
         return localWorldPacket;
     }
 
@@ -62,21 +64,8 @@ public class ReplicationManagerServer : MonoBehaviour
         };
     }
 
-    private void Update()
-    {
-        if (spawnTimer == 0) //TODO arreglar esta cutrada
-        {
-            SpawnRandomPowerUp();
-            spawnTimer = 3000;
-        }
-        else 
-        { 
-            spawnTimer--; 
-        }
-    }
-
     // Spawn power up function
-    void SpawnRandomPowerUp()
+    public void SpawnRandomPowerUp()
     {
         string randomID = worldObjects.ElementAt(Random.Range(0, worldObjects.Count)).Key;
 
@@ -90,5 +79,4 @@ public class ReplicationManagerServer : MonoBehaviour
             powerUpPosition = new Vector3(spawnPos.x, -3, spawnPos.y),
         };
     }
-
 }

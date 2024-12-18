@@ -101,7 +101,6 @@ public class Server : MonoBehaviour
                 }
 
                 Debug.Log("Received packet from client: Player ID - " + receivedPacket.playerPacket.playerID);
-                Debug.Log("Received packet from client with world instance of - " + receivedPacket.worldPacket.worldPacketID);
 
                 // Enqueue the received packet to all connected clients
                 receivedPackets.Enqueue(receivedPacket);
@@ -135,6 +134,7 @@ public class Server : MonoBehaviour
     private void StartGame()
     {
         startGameButton.gameObject.SetActive(false);
+        replicationManagerServer.SpawnRandomPowerUp();
 
         for (int i = 0; i < playerInLobbyPacket.Count; i++)
         {
@@ -181,6 +181,9 @@ public class Server : MonoBehaviour
             packet.worldPacket = replicationManagerServer.GetServerWorldPacket();
         
         replicationManagerServer.ResetServerWorldPacket();
+
+        if (packet.worldPacket.worldAction == WorldActions.DESTROY)
+            replicationManagerServer.SpawnRandomPowerUp();
 
         // Serialize the packet
         using (MemoryStream stream = new MemoryStream())

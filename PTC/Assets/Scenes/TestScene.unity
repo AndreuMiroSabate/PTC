@@ -534,7 +534,7 @@ GameObject:
   m_Component:
   - component: {fileID: 191554509}
   - component: {fileID: 191554510}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Eraser1 (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -550,8 +550,8 @@ Transform:
   m_GameObject: {fileID: 191554508}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.77757204, z: -0, w: 0.6287939}
-  m_LocalPosition: {x: -15.77, y: 1.75, z: 35.75}
-  m_LocalScale: {x: 7.1220355, y: 3.1991, z: 4.062537}
+  m_LocalPosition: {x: -15.77, y: 5.8, z: 35.75}
+  m_LocalScale: {x: 7.1220355, y: 20, z: 4.062537}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1794534940}
@@ -1134,8 +1134,8 @@ Transform:
   m_GameObject: {fileID: 276002955}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.47, y: 0.89, z: 30.06}
-  m_LocalScale: {x: 15.295947, y: 4.028164, z: 3.5702069}
+  m_LocalPosition: {x: -0.47, y: 0.59, z: 30.06}
+  m_LocalScale: {x: 15.295947, y: 7.093194, z: 3.5702069}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2138048219}
@@ -1171,7 +1171,7 @@ GameObject:
   m_Component:
   - component: {fileID: 295709609}
   - component: {fileID: 295709610}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Eraser1 (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1187,8 +1187,8 @@ Transform:
   m_GameObject: {fileID: 295709608}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.14999858, z: -0, w: 0.98868626}
-  m_LocalPosition: {x: -36.07, y: 1.75, z: -15.9}
-  m_LocalScale: {x: 7.1220355, y: 3.1991, z: 4.062537}
+  m_LocalPosition: {x: -36.07, y: 5.8, z: -15.9}
+  m_LocalScale: {x: 7.1220355, y: 20, z: 4.062537}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1794534940}
@@ -2483,7 +2483,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -3.8, y: 0.89, z: 30.1}
-  m_LocalScale: {x: 11.393943, y: 4.028164, z: 3.5702069}
+  m_LocalScale: {x: 11.393943, y: 6.0619836, z: 3.5702069}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 446557789}
@@ -2519,7 +2519,7 @@ GameObject:
   m_Component:
   - component: {fileID: 523518904}
   - component: {fileID: 523518905}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Eraser1 (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2535,8 +2535,8 @@ Transform:
   m_GameObject: {fileID: 523518903}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.61382824, z: -0, w: 0.7894397}
-  m_LocalPosition: {x: -15.41, y: 1.75, z: -42.04}
-  m_LocalScale: {x: 7.1220355, y: 3.1991, z: 4.062537}
+  m_LocalPosition: {x: -15.41, y: 5.8, z: -42.04}
+  m_LocalScale: {x: 7.1220355, y: 20, z: 4.062537}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1794534940}
@@ -3043,7 +3043,7 @@ GameObject:
   m_Component:
   - component: {fileID: 630468725}
   - component: {fileID: 630468726}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Eraser1 (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3059,8 +3059,8 @@ Transform:
   m_GameObject: {fileID: 630468724}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.19135675, z: -0, w: 0.9815206}
-  m_LocalPosition: {x: -40.93, y: 2.31, z: 13.97}
-  m_LocalScale: {x: 9.111932, y: 3.8776293, z: 4.062537}
+  m_LocalPosition: {x: -40.93, y: 6.36, z: 13.97}
+  m_LocalScale: {x: 9.111932, y: 20, z: 4.062537}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1794534940}
@@ -3350,8 +3350,8 @@ Transform:
   m_GameObject: {fileID: 745661091}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.47, y: 0.89, z: 30.06}
-  m_LocalScale: {x: 15.295947, y: 4.028164, z: 3.5702069}
+  m_LocalPosition: {x: -0.47, y: 1.31, z: 30.06}
+  m_LocalScale: {x: 15.295947, y: 6.578245, z: 3.5702069}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 524500584}
@@ -4899,8 +4899,8 @@ Transform:
   m_GameObject: {fileID: 1015329750}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.47, y: 0.89, z: 30.06}
-  m_LocalScale: {x: 15.295947, y: 4.028164, z: 3.5702069}
+  m_LocalPosition: {x: -0.47, y: 0.54, z: 30.06}
+  m_LocalScale: {x: 15.295947, y: 7.3095064, z: 3.5702069}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 149107582}
@@ -5728,7 +5728,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1125951263}
   - component: {fileID: 1125951264}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Eraser1 (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5744,8 +5744,8 @@ Transform:
   m_GameObject: {fileID: 1125951262}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.8048373, z: -0, w: 0.59349555}
-  m_LocalPosition: {x: 13.39, y: 1.75, z: -36.12}
-  m_LocalScale: {x: 7.1220355, y: 3.1991, z: 4.062537}
+  m_LocalPosition: {x: 13.39, y: 5.8, z: -36.12}
+  m_LocalScale: {x: 7.1220355, y: 20, z: 4.062537}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1794534940}
@@ -6214,7 +6214,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1200568474}
   - component: {fileID: 1200568475}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Eraser1 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6230,8 +6230,8 @@ Transform:
   m_GameObject: {fileID: 1200568473}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.20636417, z: -0, w: 0.9784753}
-  m_LocalPosition: {x: 41.59, y: 2.08, z: -16.56}
-  m_LocalScale: {x: 7.1220355, y: 4.2173734, z: 4.062537}
+  m_LocalPosition: {x: 41.59, y: 6.13, z: -16.56}
+  m_LocalScale: {x: 7.1220355, y: 20, z: 4.062537}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1794534940}
@@ -7079,7 +7079,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1474471596}
   - component: {fileID: 1474471597}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Eraser1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7095,8 +7095,8 @@ Transform:
   m_GameObject: {fileID: 1474471595}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.1265951, z: -0, w: 0.9919545}
-  m_LocalPosition: {x: 36.25, y: 1.75, z: 16.88}
-  m_LocalScale: {x: 7.1220355, y: 3.1991, z: 4.062537}
+  m_LocalPosition: {x: 36.25, y: 5.8, z: 16.88}
+  m_LocalScale: {x: 7.1220355, y: 20, z: 4.062537}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1794534940}
@@ -9108,7 +9108,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1801238732}
   - component: {fileID: 1801238733}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Eraser1 (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9124,8 +9124,8 @@ Transform:
   m_GameObject: {fileID: 1801238731}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.801231, z: -0, w: 0.59835505}
-  m_LocalPosition: {x: 15.48, y: 1.75, z: 42.36}
-  m_LocalScale: {x: 7.1220355, y: 3.1991, z: 4.062537}
+  m_LocalPosition: {x: 15.48, y: 5.8, z: 42.36}
+  m_LocalScale: {x: 7.1220355, y: 20, z: 4.062537}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1794534940}
