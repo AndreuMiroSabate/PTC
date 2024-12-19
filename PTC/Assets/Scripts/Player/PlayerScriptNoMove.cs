@@ -19,6 +19,7 @@ public class PlayerScriptNoMove : PlayerScript
         if (HasPowerUp(PowerUps.SHIELD))
         {
             Destroy(shieldSpawned);
+            RemovePowerUp(PowerUps.SHIELD);
             return;
         }
     }

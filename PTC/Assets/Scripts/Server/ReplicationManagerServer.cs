@@ -1,8 +1,5 @@
 using AYellowpaper.SerializedCollections;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using UnityEngine;
 
 public enum WorldActions
@@ -65,6 +62,7 @@ public class ReplicationManagerServer : MonoBehaviour
     // Spawn power up function
     public void SpawnRandomPowerUp()
     {
+        //if (GameObject.FindObjectOfType(typeof(PowerUpBehaviour))) return; //Revise when fix lag
         string randomID = worldObjects.ElementAt(Random.Range(0, worldObjects.Count)).Key;
 
         //Change en algun momento TODO

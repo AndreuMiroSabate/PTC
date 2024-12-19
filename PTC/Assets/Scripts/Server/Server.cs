@@ -134,7 +134,7 @@ public class Server : MonoBehaviour
     private void StartGame()
     {
         startGameButton.gameObject.SetActive(false);
-        //replicationManagerServer.SpawnRandomPowerUp();
+        
 
         for (int i = 0; i < playerInLobbyPacket.Count; i++)
         {
@@ -154,7 +154,12 @@ public class Server : MonoBehaviour
             ThePacket thePacket = new ThePacket
             {
                 playerPacket = packet,
-                worldPacket = replicationManagerServer.GetServerWorldPacket(),
+                worldPacket = new WorldPacket
+                {
+                    worldAction = WorldActions.DESTROY,
+                    worldPacketID = "47",
+                    powerUpPosition = Vector3.zero,
+                },
             };
 
             Broadcast(thePacket);

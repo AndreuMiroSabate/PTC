@@ -43,3 +43,11 @@ Difficulties and bugs:
 - There is no lobby full screen (for someone who wants to join a server that is full).
 - Some power ups appear inside the obstacles.
 - Sometimes, the power ups doesn't disapear for all the clients (starts happening after some power ups spawned).
+- When a shield is destroyed, another power up appears (this should not happen)
+
+Improvements:
+- Addition of 4 power ups that appear thanks to a world state replication
+- Map Iteration
+- UI upgrades
+- Player cap to 4
+- Visual Improvement

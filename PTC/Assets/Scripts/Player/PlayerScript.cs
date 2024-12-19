@@ -182,7 +182,7 @@ public class PlayerScript : MonoBehaviour
     //Fire a projectile
     public void FireProjectile()
     {
-        if (playerState != PlayerState.PLAYING) return;
+        //if (playerState != PlayerState.PLAYING) return;
         if (Time.time - shootCoolDownTimer <= shootCoolDown) return;
 
         // Shoot particle and effects
@@ -226,6 +226,7 @@ public class PlayerScript : MonoBehaviour
         if (HasPowerUp(PowerUps.SHIELD))
         {
             Destroy(shieldSpawned);
+            RemovePowerUp(PowerUps.SHIELD);
             return;
         }
 
