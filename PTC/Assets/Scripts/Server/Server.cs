@@ -124,8 +124,11 @@ public class Server : MonoBehaviour
 
             packet.playerPacket.playerPosition = GameObject.Find(objSpawnPos).transform.position;
 
-            startGameButton.onClick.AddListener(StartGame);
+            startGameButton?.onClick.AddListener(StartGame);
         }
+
+        //Warn the replication manager
+        replicationManagerServer.ChangeToGameScene();
 
         playerInLobbyPacket.Add(packet);
         return packet;
@@ -135,7 +138,6 @@ public class Server : MonoBehaviour
     {
         startGameButton.gameObject.SetActive(false);
         
-
         for (int i = 0; i < playerInLobbyPacket.Count; i++)
         {
             int x = i + 1;
@@ -154,12 +156,7 @@ public class Server : MonoBehaviour
             ThePacket thePacket = new ThePacket
             {
                 playerPacket = packet,
-                worldPacket = new WorldPacket
-                {
-                    worldAction = WorldActions.DESTROY,
-                    worldPacketID = "47",
-                    powerUpPosition = Vector3.zero,
-                },
+                worldPacket = replicationManagerServer.GetServerWorldPacket(),
             };
 
             Broadcast(thePacket);
@@ -177,7 +174,7 @@ public class Server : MonoBehaviour
         }
 
         // Get Server World Packet
-        if(packet.worldPacket.worldPacketID.Equals("")) 
+        if (packet.worldPacket.worldPacketID.Equals("")) 
             packet.worldPacket = replicationManagerServer.GetServerWorldPacket();
         
         replicationManagerServer.ResetServerWorldPacket();

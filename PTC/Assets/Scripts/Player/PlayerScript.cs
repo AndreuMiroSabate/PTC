@@ -39,7 +39,6 @@ public class PlayerScript : MonoBehaviour
 
     public UpdatePackages playerUpdate;
 
-    [HideInInspector]
     public PlayerState playerState;
 
     [HideInInspector]

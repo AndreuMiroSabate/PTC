@@ -1,6 +1,7 @@
 using AYellowpaper.SerializedCollections;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum WorldActions
 {
@@ -39,6 +40,12 @@ public class ReplicationManagerServer : MonoBehaviour
         };
     }
 
+    // Warn the script when scene change
+    public void ChangeToGameScene()
+    {
+        GameObject.Find("StartGameButton").GetComponent<Button>().onClick.AddListener(SpawnInitialPowerUp);
+    }
+
     // Get packet function
     public WorldPacket GetServerWorldPacket()
     {
@@ -57,6 +64,11 @@ public class ReplicationManagerServer : MonoBehaviour
             worldPacketID = "",
             powerUpPosition = Vector3.zero,
         };
+    }
+
+    public void SpawnInitialPowerUp()
+    {
+        Invoke("SpawnRandomPowerUp", 1f);
     }
 
     // Spawn power up function
