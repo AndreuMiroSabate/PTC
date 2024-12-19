@@ -1,5 +1,5 @@
 Github link: https://github.com/AndreuMiroSabate/PTC
-Github Release link: 
+Github Release link: https://github.com/AndreuMiroSabate/PTC/releases/tag/PreAlphaV2
 
 List of Contributions:
 Jose Antonio Tur: 
@@ -26,6 +26,8 @@ In-Game controls:
 Menu controls:
 - Mouse move--> Move cursor.
 - Left Click --> Select.
+
+If you want to use the package is necessari that the project has a URP base
 
 Power ups:
 - Marble: Gives you a shield that blocks one shot.
