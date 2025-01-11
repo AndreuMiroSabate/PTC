@@ -45,7 +45,7 @@ public class Client_Host : MonoBehaviour
         {
             playerID = playerID,
             playerName = playerNameTextMesh.text,
-            playerPosition = new Vector3(0, 5, 0),
+            playerPosition = new Vector3(0, -3.5f, 0),
             life = 3
         };
 

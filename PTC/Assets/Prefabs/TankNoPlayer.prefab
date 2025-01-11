@@ -509,15 +509,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 34d48dd58d0d3aa48961e084d649f448, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 15.6
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 34d48dd58d0d3aa48961e084d649f448, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.490032
+      value: -3.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 34d48dd58d0d3aa48961e084d649f448, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.2559261
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 34d48dd58d0d3aa48961e084d649f448, type: 3}
       propertyPath: m_LocalRotation.w
@@ -609,6 +609,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerRb: {fileID: 1772738485250545221}
   playerTrans: {fileID: 3892948207647663531}
+  targetPosition: {x: 0, y: 0, z: 0}
+  targetRotation: {x: 0, y: 0, z: 0, w: 0}
+  positionSmoothness: 0.5
+  rotationSmoothness: 0.5
   canonTransform: {fileID: 7037554799864000981}
   floorLayer:
     serializedVersion: 2
@@ -633,6 +637,7 @@ MonoBehaviour:
   rotation: 60
   playerHealth: 3
   bulletBounceNum: 1
+  trajectoryVisualizer: {fileID: 0}
   shootCoolDown: 0.5
   shootCoolDownTimer: 0
   localWorldPacket:

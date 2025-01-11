@@ -22,6 +22,15 @@ public class PlayerScript : MonoBehaviour
     public Rigidbody playerRb;
     public Transform playerTrans;
 
+    [HideInInspector]
+    public Vector3 targetPosition;
+    [HideInInspector]
+    public Quaternion targetRotation;
+
+    [Header("Interpolation Settings")]
+    public float positionSmoothness = 0.1f; // Adjust for smoothness
+    public float rotationSmoothness = 0.1f;
+
     [Space]
     public Transform canonTransform;
     public LayerMask floorLayer;
@@ -106,6 +115,10 @@ public class PlayerScript : MonoBehaviour
         playerState = PlayerState.WAIT;
         speed = 10;
         rotation = 90f;
+
+        // Initialize the target position and rotation
+        targetPosition = transform.position;
+        targetRotation = transform.rotation;
     }
 
     private void Update()
@@ -131,24 +144,28 @@ public class PlayerScript : MonoBehaviour
         float verticalInput = Input.GetAxis("Vertical");   // Forward/Backward (-1 to 1)
         float horizontalInput = Input.GetAxis("Horizontal"); // Left/Right (-1 to 1)
 
-        // Move the player based on vertical input using Rigidbody
-        if (Mathf.Abs(verticalInput) > 0.01f) // Add a small threshold to avoid unnecessary updates
+        // Calculate movement with interpolation
+        if (Mathf.Abs(verticalInput) > 0.01f)
         {
             Vector3 movement = transform.right * verticalInput * speed * Time.deltaTime;
 
             RaycastHit hit;
             if (!Physics.Raycast(transform.position, movement.normalized, out hit, movement.magnitude))
             {
-                transform.Translate(movement, Space.World);
+                targetPosition += movement;
             }
         }
 
-        // Rotate the player based on horizontal input
+        // Calculate rotation with interpolation
         if (Mathf.Abs(horizontalInput) > 0.01f)
         {
             Quaternion deltaRotation = Quaternion.Euler(Vector3.up * horizontalInput * rotation * Time.deltaTime);
-            transform.rotation *= deltaRotation;
+            targetRotation *= deltaRotation;
         }
+
+        // Interpolate position and rotation
+        transform.position = Vector3.Lerp(transform.position, targetPosition, positionSmoothness);
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationSmoothness);
 
         UpdatePacket();
     }
@@ -229,9 +246,6 @@ public class PlayerScript : MonoBehaviour
             return;
         }
 
-        //TODO: feedback animation
-
-
         playerHealth -= 1;
 
         //If player' health is bellow or equal to 0, dies
@@ -257,16 +271,14 @@ public class PlayerScript : MonoBehaviour
     //Update player values
     public void GetPlayerValues(PlayerPacket playerPacket)
     {
-        //postion
-        transform.position = playerPacket.playerPosition;
-        
-        //rotation
-        transform.rotation = playerPacket.playerRotation;
+        // Update target position and rotation for interpolation
+        targetPosition = playerPacket.playerPosition;
+        targetRotation = playerPacket.playerRotation;
 
-        //canon rotation
+        // canon rotation
         canonTransform.rotation = playerPacket.playerCanonRotation;
 
-        //player health
+        // player health
         if (playerHealth > playerPacket.life)
             playerHealth = playerPacket.life;
 

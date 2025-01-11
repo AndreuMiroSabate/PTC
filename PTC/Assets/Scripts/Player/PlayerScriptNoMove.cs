@@ -1,4 +1,6 @@
 
+using UnityEngine;
+
 public class PlayerScriptNoMove : PlayerScript
 {
     private void Update()
@@ -9,6 +11,10 @@ public class PlayerScriptNoMove : PlayerScript
     void FixedUpdate()
     {
         //FixedUpdate no imput check
+
+        // Interpolate position and rotation
+        transform.position = Vector3.Lerp(transform.position, targetPosition, positionSmoothness);
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationSmoothness);
     }
 
     public override void ReceiveDamage(PlayerPacket playerPacket)
