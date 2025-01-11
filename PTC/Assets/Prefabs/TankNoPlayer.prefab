@@ -609,14 +609,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useJitter: 0
   minJitter: 0
-  maxJitter: 500
+  maxJitter: 100
   playerRb: {fileID: 1772738485250545221}
   playerTrans: {fileID: 3892948207647663531}
   targetPosition: {x: 0, y: 0, z: 0}
   targetRotation: {x: 0, y: 0, z: 0, w: 0}
   positionSmoothness: 0.9
   rotationSmoothness: 0.9
-  interpolationDelay: 0.25
+  interpolationDelay: 0.001
   canonTransform: {fileID: 7037554799864000981}
   floorLayer:
     serializedVersion: 2
