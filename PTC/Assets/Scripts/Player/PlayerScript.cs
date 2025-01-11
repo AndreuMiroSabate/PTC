@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.Collections.Generic;
 
 public enum PlayerState
 {
@@ -17,8 +18,21 @@ public enum PowerUps
     BOUNCING_BULLET = 1 << 3,   // 1000
 }
 
+public class PlayerStateSnapshot
+{
+    public Vector3 position;
+    public Quaternion rotation;
+    public float timestamp;
+}
+
 public class PlayerScript : MonoBehaviour
 {
+    [Header("Jitter Generation Values")]
+    public bool useJitter = false;
+    public float minJitter;
+    public float maxJitter;
+
+    [Space]
     public Rigidbody playerRb;
     public Transform playerTrans;
 
@@ -30,6 +44,7 @@ public class PlayerScript : MonoBehaviour
     [Header("Interpolation Settings")]
     public float positionSmoothness = 0.1f; // Adjust for smoothness
     public float rotationSmoothness = 0.1f;
+    public float interpolationDelay = 0.1f; // Network delay buffer time
 
     [Space]
     public Transform canonTransform;
@@ -40,7 +55,12 @@ public class PlayerScript : MonoBehaviour
     public GameObject smokeParticlePref;
     [Space]
     public TextMeshPro playerNameTXT;
-    
+
+    [Space]
+    [Header("Lag Compensation")]
+    public Queue<PlayerStateSnapshot> stateBuffer = new Queue<PlayerStateSnapshot>();
+    public const int maxBufferSize = 20;
+
     [Space]
     public PowerUps activePowerUps = PowerUps.None;
 
@@ -125,12 +145,11 @@ public class PlayerScript : MonoBehaviour
     {
         if (playerState != PlayerState.PLAYING) return;
 
-        // Shoot (Cambiar luego para que mande msg al server)
-        if (Input.GetMouseButtonUp(0))
-        {
-            playerPacket.playerAction = PlayerAction.SHOOT;
-            UpdatePacket();
-        }
+        // Process Input and Simulate Movement
+        ProcessInput();
+
+        // Update Position and Rotation using Interpolation
+        InterpolateMovement();
     }
 
     void FixedUpdate()
@@ -140,34 +159,47 @@ public class PlayerScript : MonoBehaviour
         // Canon behaviour
         AimCannonAtMouse();
 
-        // Get the input from the Horizontal and Vertical axes
-        float verticalInput = Input.GetAxis("Vertical");   // Forward/Backward (-1 to 1)
-        float horizontalInput = Input.GetAxis("Horizontal"); // Left/Right (-1 to 1)
+        Invoke("UpdatePacket", Random.Range(minJitter, maxJitter));
+    }
 
-        // Calculate movement with interpolation
+    public void ProcessInput()
+    {
+        // Shoot (Cambiar luego para que mande msg al server)
+        if (Input.GetMouseButtonUp(0))
+        {
+            playerPacket.playerAction = PlayerAction.SHOOT;
+            Invoke("UpdatePacket", Random.Range(minJitter, maxJitter));
+        }
+
+        float verticalInput = Input.GetAxis("Vertical");
+        float horizontalInput = Input.GetAxis("Horizontal");
+
         if (Mathf.Abs(verticalInput) > 0.01f)
         {
             Vector3 movement = transform.right * verticalInput * speed * Time.deltaTime;
-
-            RaycastHit hit;
-            if (!Physics.Raycast(transform.position, movement.normalized, out hit, movement.magnitude))
-            {
-                targetPosition += movement;
-            }
+            targetPosition += movement;
         }
 
-        // Calculate rotation with interpolation
         if (Mathf.Abs(horizontalInput) > 0.01f)
         {
             Quaternion deltaRotation = Quaternion.Euler(Vector3.up * horizontalInput * rotation * Time.deltaTime);
             targetRotation *= deltaRotation;
         }
+    }
 
-        // Interpolate position and rotation
+    public virtual void InterpolateMovement()
+    {
+        // Process Network Buffer for Interpolation
+        while (stateBuffer.Count > 0 && stateBuffer.Peek().timestamp <= Time.time - interpolationDelay)
+        {
+            PlayerStateSnapshot snapshot = stateBuffer.Dequeue();
+            targetPosition = snapshot.position;
+            targetRotation = snapshot.rotation;
+        }
+
+        // Smoothly interpolate position and rotation
         transform.position = Vector3.Lerp(transform.position, targetPosition, positionSmoothness);
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationSmoothness);
-
-        UpdatePacket();
     }
 
     void AimCannonAtMouse()
@@ -252,14 +284,14 @@ public class PlayerScript : MonoBehaviour
         if(playerPacket.life <= 0)
         {
             this.playerPacket.playerAction = PlayerAction.DIE;
-            UpdatePacket();
+            Invoke("UpdatePacket", Random.Range(minJitter, maxJitter));
         }
     }
 
     public void BulletHit()
     {
         playerPacket.playerAction = PlayerAction.GET_DAMAGE;
-        UpdatePacket();
+        Invoke("UpdatePacket", Random.Range(minJitter, maxJitter));
     }
 
     public void PlayerDie()
@@ -271,9 +303,17 @@ public class PlayerScript : MonoBehaviour
     //Update player values
     public void GetPlayerValues(PlayerPacket playerPacket)
     {
-        // Update target position and rotation for interpolation
-        targetPosition = playerPacket.playerPosition;
-        targetRotation = playerPacket.playerRotation;
+        // Add received state to buffer
+        stateBuffer.Enqueue(new PlayerStateSnapshot
+        {
+            position = playerPacket.playerPosition,
+            rotation = playerPacket.playerRotation,
+            timestamp = Time.time
+        });
+
+        // Limit buffer size
+        if (stateBuffer.Count > maxBufferSize)
+            stateBuffer.Dequeue();
 
         // canon rotation
         canonTransform.rotation = playerPacket.playerCanonRotation;

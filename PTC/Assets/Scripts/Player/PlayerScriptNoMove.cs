@@ -6,15 +6,14 @@ public class PlayerScriptNoMove : PlayerScript
     private void Update()
     {
         //Update no imput check
+
+        // Update Position and Rotation using Interpolation
+        InterpolateMovement();
     }
 
     void FixedUpdate()
     {
         //FixedUpdate no imput check
-
-        // Interpolate position and rotation
-        transform.position = Vector3.Lerp(transform.position, targetPosition, positionSmoothness);
-        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationSmoothness);
     }
 
     public override void ReceiveDamage(PlayerPacket playerPacket)

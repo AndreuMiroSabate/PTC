@@ -607,12 +607,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67c1f1da1567ac24c92ce3a3b9350355, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useJitter: 0
+  minJitter: 0
+  maxJitter: 500
   playerRb: {fileID: 1772738485250545221}
   playerTrans: {fileID: 3892948207647663531}
   targetPosition: {x: 0, y: 0, z: 0}
   targetRotation: {x: 0, y: 0, z: 0, w: 0}
-  positionSmoothness: 0.5
-  rotationSmoothness: 0.5
+  positionSmoothness: 0.9
+  rotationSmoothness: 0.9
+  interpolationDelay: 0.25
   canonTransform: {fileID: 7037554799864000981}
   floorLayer:
     serializedVersion: 2

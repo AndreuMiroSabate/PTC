@@ -109,7 +109,7 @@ public class Client : MonoBehaviour
     private void Update()
     {
         // Process received packets
-        while (receivedPackets.TryDequeue(out ThePacket packet))
+        while(receivedPackets.TryDequeue(out ThePacket packet))
         {
             ProcessPacket(packet);
         }
